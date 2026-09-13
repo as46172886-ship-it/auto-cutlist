@@ -1,0 +1,31 @@
+# Credentials and local authentication
+.env
+.env.*
+!.env.example
+.dev.vars
+.dev.vars.*
+*.pem
+*.key
+*credentials*
+*cookies*
+*token-cache*
+
+# Dependencies and build output
+node_modules/
+dist/
+.next/
+.vinext/
+.wrangler/
+.sites-runtime/
+coverage/
+
+# Local tooling and temporary output
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.temp
+work/
+
+# Nested repository metadata is not part of the archive
+.git/

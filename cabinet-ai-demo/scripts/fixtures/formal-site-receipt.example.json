@@ -1,0 +1,12 @@
+{
+  "evaluationKind": "formal_site_scan",
+  "liveUrl": "https://cabinet-ai-demo.as46172886.chatgpt.site",
+  "deploymentVersion": 1,
+  "startedAt": "2026-09-03T01:00:00+08:00",
+  "downloadedAt": "2026-09-03T01:20:00+08:00",
+  "sourceSha256s": [
+    "3126cd1609db7bc5dcff3e9ba4a0be2936ce059ef2791c256e356beec3ba0a3f",
+    "8ee677c1e1f01b61eead748adc1896a73cd69d51f4b76c5274c4f80204d449c0"
+  ],
+  "outputSha256": "填入實際下載Excel的SHA-256"
+}

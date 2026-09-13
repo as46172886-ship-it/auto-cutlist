@@ -1,0 +1,23 @@
+{
+  "name": "佛斯特完整圖面回歸來源",
+  "files": [
+    {
+      "role": "置物櫃1完整圖面",
+      "relativePath": "系統櫃/C769D906-AD76-496E-9DB3-674B8064F26E.jpeg",
+      "libraryFileId": "libfile_a9e6eae91ba881918c99aa38cced5dfa",
+      "sha256": "3126cd1609db7bc5dcff3e9ba4a0be2936ce059ef2791c256e356beec3ba0a3f",
+      "sizeBytes": 341021,
+      "width": 1152,
+      "height": 1536
+    },
+    {
+      "role": "置物櫃2完整圖面",
+      "relativePath": "系統櫃/905DC350-E2DC-4684-9A8A-042DB0E94860.jpeg",
+      "libraryFileId": "libfile_577c59a8c23c81918e8e96103592eab2",
+      "sha256": "8ee677c1e1f01b61eead748adc1896a73cd69d51f4b76c5274c4f80204d449c0",
+      "sizeBytes": 383654,
+      "width": 1152,
+      "height": 1536
+    }
+  ]
+}

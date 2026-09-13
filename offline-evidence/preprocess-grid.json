@@ -1,0 +1,211 @@
+[
+  {
+    "name": "C769D906-AD76-496E-9DB3-674B8064F26E.jpeg",
+    "bounds": [
+      23,
+      218
+    ],
+    "radius": 21,
+    "binary_ink_ratio": 0.0454,
+    "gray": {
+      "matched": 0,
+      "expected": 9,
+      "recall": 0.0,
+      "tokens": [
+        "00",
+        "1509",
+        "4"
+      ]
+    },
+    "binary": {
+      "matched": 1,
+      "expected": 9,
+      "recall": 11.1,
+      "tokens": [
+        "003",
+        "2",
+        "350",
+        "7"
+      ]
+    },
+    "gray_text": "P1509\n\n=a\n\nme\n\nAy\n\n‘\\\n\n4\n\n=\n\ni\n\n|\n\na\n\n00\n\niy\n\nig",
+    "binary_text": "~~\n\n~\n\n%\n\n7\n\n~\n\nroo\n\nog\n\nay\n\nae a\n\ncos:\n\n| |\n\ni\n\n#2E350mm BREH003\n\nPee ns spe\n\na\n\nere"
+  },
+  {
+    "name": "905DC350-E2DC-4684-9A8A-042DB0E94860.jpeg",
+    "bounds": [
+      16,
+      222
+    ],
+    "radius": 21,
+    "binary_ink_ratio": 0.0666,
+    "gray": {
+      "matched": 2,
+      "expected": 30,
+      "recall": 6.7,
+      "tokens": [
+        "0",
+        "2348",
+        "350",
+        "4690054"
+      ]
+    },
+    "binary": {
+      "matched": 5,
+      "expected": 30,
+      "recall": 16.7,
+      "tokens": [
+        "0",
+        "00",
+        "003",
+        "0350",
+        "22460",
+        "2348",
+        "3",
+        "469505602348",
+        "500",
+        "500",
+        "54",
+        "7",
+        "920",
+        "920"
+      ]
+    },
+    "gray_text": "D350\n\neke\n\nee\n\n==ss===>\n\n4690054 0x2348,\n\n< a\n\nze:\n\nose\n\ni=\n\nee | ~ | - |\n\n|\n\nses",
+    "binary_text": "0350\n\nemfe\n\nee\n\n469505602348\n\nhI 7\n\n=\n\n|\n\n_—<—<—————aa———SSL——_—_—=_=_—=_=={£__~_—_=__|\n\n|v i|vj{vf[ee |\n\n“~~\n\n|\n\n~jle-\n\na a\n\nSUH\n\nTEL\n\n22460 ——___920.—____920_____\n\n500\n\nos00\n\n500\n\nE54 0mm 2348( BARE) BAEH003\n\n|\n\nREHEREZES ONOmm . BBAHOO3"
+  }
+]
+[
+  {
+    "radius": 10,
+    "bias": 15,
+    "matched": 7,
+    "expected": 39,
+    "recall": 17.9,
+    "per_image": [
+      22.2,
+      16.7
+    ]
+  },
+  {
+    "radius": 10,
+    "bias": 11,
+    "matched": 6,
+    "expected": 39,
+    "recall": 15.4,
+    "per_image": [
+      11.1,
+      16.7
+    ]
+  },
+  {
+    "radius": 16,
+    "bias": 15,
+    "matched": 6,
+    "expected": 39,
+    "recall": 15.4,
+    "per_image": [
+      33.3,
+      10.0
+    ]
+  },
+  {
+    "radius": 21,
+    "bias": 11,
+    "matched": 6,
+    "expected": 39,
+    "recall": 15.4,
+    "per_image": [
+      11.1,
+      16.7
+    ]
+  },
+  {
+    "radius": 16,
+    "bias": 7,
+    "matched": 5,
+    "expected": 39,
+    "recall": 12.8,
+    "per_image": [
+      22.2,
+      10.0
+    ]
+  },
+  {
+    "radius": 16,
+    "bias": 11,
+    "matched": 5,
+    "expected": 39,
+    "recall": 12.8,
+    "per_image": [
+      22.2,
+      10.0
+    ]
+  },
+  {
+    "radius": 21,
+    "bias": 15,
+    "matched": 5,
+    "expected": 39,
+    "recall": 12.8,
+    "per_image": [
+      22.2,
+      10.0
+    ]
+  },
+  {
+    "radius": 28,
+    "bias": 7,
+    "matched": 5,
+    "expected": 39,
+    "recall": 12.8,
+    "per_image": [
+      22.2,
+      10.0
+    ]
+  },
+  {
+    "radius": 28,
+    "bias": 15,
+    "matched": 5,
+    "expected": 39,
+    "recall": 12.8,
+    "per_image": [
+      22.2,
+      10.0
+    ]
+  },
+  {
+    "radius": 21,
+    "bias": 7,
+    "matched": 4,
+    "expected": 39,
+    "recall": 10.3,
+    "per_image": [
+      11.1,
+      10.0
+    ]
+  },
+  {
+    "radius": 28,
+    "bias": 11,
+    "matched": 4,
+    "expected": 39,
+    "recall": 10.3,
+    "per_image": [
+      22.2,
+      6.7
+    ]
+  },
+  {
+    "radius": 10,
+    "bias": 7,
+    "matched": 3,
+    "expected": 39,
+    "recall": 7.7,
+    "per_image": [
+      0.0,
+      10.0
+    ]
+  }
+]
