@@ -1,8 +1,8 @@
 {
   "date": "2026-09-14",
-  "scope": "Current private GitHub archive inventory after Sites v81 sync; excludes Git metadata, dependencies, build output, credentials, cookies and local auth",
-  "sourceCommit": "11c1f3aa0e05b3f1db8795675d7d1e899970ce45",
-  "sitesVersion": 81,
+  "scope": "Current private GitHub archive inventory after Sites v82 sync; excludes Git metadata, dependencies, build output, credentials, cookies and local auth",
+  "sourceCommit": "070be29e1dc2bc7564076a6727f212aa4dcbc133",
+  "sitesVersion": 82,
   "targetRepository": "as46172886-ship-it/auto-cutlist",
   "files": [
     {
@@ -49,8 +49,8 @@
     },
     {
       "path": "cabinet-ai-demo/app/api/analyze/pipeline.ts",
-      "bytes": 65579,
-      "sha256": "5be666eb9974f8145a27f86d73932a6de175b974c847e3910575a95da30f5812",
+      "bytes": 65865,
+      "sha256": "e0c54272d02f7119124579bef0bdee5028f3dd84413d238279db40a43a2370f2",
       "status": "current-snapshot"
     },
     {
@@ -79,8 +79,8 @@
     },
     {
       "path": "cabinet-ai-demo/app/api/analyze/structure-validation.ts",
-      "bytes": 50251,
-      "sha256": "16b013f83f463bc883100e9a4c95a993cff8e58ea38b5905dbfe2d158e913f83",
+      "bytes": 50005,
+      "sha256": "e779df3d632c54db9724690a5fdc7c9fec0e49358900887c8716f61009d5ead3",
       "status": "current-snapshot"
     },
     {
@@ -103,8 +103,8 @@
     },
     {
       "path": "cabinet-ai-demo/app/api/doors/route.ts",
-      "bytes": 20779,
-      "sha256": "9b910ffe69a8963cc5af5c0904526c6553955ca757f20f23ab72d75d952491a6",
+      "bytes": 21277,
+      "sha256": "f8205e6be49338faeaf3112428b529f352df896497e446e4420b3c69e2aefc53",
       "status": "current-snapshot"
     },
     {
@@ -139,8 +139,8 @@
     },
     {
       "path": "cabinet-ai-demo/app/blocking-issues.ts",
-      "bytes": 7551,
-      "sha256": "9a9d0695b780f769cfd4c8d023e67846d3958666e8cdf27baeb930f8b0e16a6e",
+      "bytes": 7568,
+      "sha256": "4f91abd18dc9b170c064490ba62088aee52a6311eb115ea1187ca7000d4a901c",
       "status": "current-snapshot"
     },
     {
@@ -241,8 +241,8 @@
     },
     {
       "path": "cabinet-ai-demo/app/door-recognition.ts",
-      "bytes": 16107,
-      "sha256": "40047f7ca00e026530063ac85e414e491a1c644c85c363ad4a627a93dbb0ebeb",
+      "bytes": 16673,
+      "sha256": "1649f59e44c5a3b295749fd9dc62abd46e7737b4f2a9b2b144c4db88acc53b82",
       "status": "current-snapshot"
     },
     {
@@ -379,14 +379,14 @@
     },
     {
       "path": "cabinet-ai-demo/app/sop-rules.ts",
-      "bytes": 20399,
-      "sha256": "8224857e88b553fca8c8334ac2e16726723f5148a63b660f1b86dcd4f7df4d51",
+      "bytes": 20656,
+      "sha256": "e0a3498fa69f4df200cd0a367e95c1375794704ab06638f4a9471bce8dc3b175",
       "status": "current-snapshot"
     },
     {
       "path": "cabinet-ai-demo/app/sop.ts",
-      "bytes": 54514,
-      "sha256": "86d8534b652ffd275a61d5840621a71d9592b9cc50ab6b34a8d3b0a983c4c35f",
+      "bytes": 54628,
+      "sha256": "ff490d0e0a0276106b814b15df13e98ddf1eaa10455ad79858e865216613b7cd",
       "status": "current-snapshot"
     },
     {
@@ -415,8 +415,8 @@
     },
     {
       "path": "cabinet-ai-demo/docs/research-log.md",
-      "bytes": 27633,
-      "sha256": "e09a95a719f0a54531b30cf3459a9d7c2eeaffda88d7506d4467c1a92ce11556",
+      "bytes": 28617,
+      "sha256": "af2c0835e678e7a9a0d28f55af7a9ad5cb1a843286289bac3bec205efb70d8b8",
       "status": "current-snapshot"
     },
     {
@@ -667,8 +667,8 @@
     },
     {
       "path": "cabinet-ai-demo/tests/cabinet-validation.test.mjs",
-      "bytes": 102975,
-      "sha256": "5b04ec36ea806aaab4297fbb13cc738f624527de49f3937eba100fc2cc37f342",
+      "bytes": 104171,
+      "sha256": "aa86050774f4aaf3b071836b1a295d1d6adaa8183914d72ccf127132f0fe327a",
       "status": "current-snapshot"
     },
     {
@@ -686,7 +686,7 @@
     {
       "path": "cabinet-ai-demo/tests/complete-output.test.mjs",
       "bytes": 18658,
-      "sha256": "1b29d53cb25c88a7e611a6d7e4fc8eb6af3f8a677b6514ac271bc83d0fce1bbd",
+      "sha256": "58826f4cac9e743575f78260f9452247a69681350abbaf23084085d6c36c05f3",
       "status": "current-snapshot"
     },
     {
@@ -841,20 +841,20 @@
     },
     {
       "path": "CHANGELOG.txt",
-      "bytes": 9525,
-      "sha256": "c32a760d81f6888d5b53cc54f817bf0ea98efb95642cc672dc28393ba08f4caa",
+      "bytes": 9700,
+      "sha256": "ffdf825443058a4a501224c153710b6634bac9bbbd1d0a77d1d4f868e7d30784",
       "status": "current-snapshot"
     },
     {
       "path": "CURRENT_VERSION.txt",
       "bytes": 365,
-      "sha256": "41d8b40880ec6716a455bc1d5eb09520fdf5123ace6cda7b7dc387962d81c6d9",
+      "sha256": "96cc259878e09f9252b6ddc29b6863f0653cd5520aa43a9070d734a7c1b95428",
       "status": "current-snapshot"
     },
     {
       "path": "HANDOFF.md",
-      "bytes": 5261,
-      "sha256": "01f73eca6dc89fca3db72490d7316d13e2deca76b724dc4ef66bbdc4df0dd039",
+      "bytes": 5505,
+      "sha256": "9ac825f7fa41586adc9606df732b5c142542f59c97aa2f93352a74f6957ab35f",
       "status": "current-snapshot"
     },
     {
@@ -2137,20 +2137,20 @@
     },
     {
       "path": "project-docs/FORMULAS.md",
-      "bytes": 6041,
-      "sha256": "a4139134991a7a838b4d4b3a3ab48bfb20721368b49f96531b02d6df6c468802",
+      "bytes": 6132,
+      "sha256": "960c3d5f5bbbb6dda71d81e708f93d9cf25f36c662e8f0aa8f53ad3c5100f4c1",
       "status": "current-snapshot"
     },
     {
       "path": "project-docs/README.md",
       "bytes": 3029,
-      "sha256": "c12bdc179c955cd1eb94d57474c81c805cdc3f30b6a259f3732e3b407b4ff662",
+      "sha256": "8d2bc7c736ee37c8c007e15c0b3e09a424928ddf220e6ff004200076b2368376",
       "status": "current-snapshot"
     },
     {
       "path": "project-docs/RULES.md",
-      "bytes": 4223,
-      "sha256": "cc1678eb377269479ec93b04b5b3edb6f23dbac3ad966441cbc03a90610345d7",
+      "bytes": 4600,
+      "sha256": "985a54b0096a72b7352b961dde2a65a525a897e592426af237cf2a600f00a0f8",
       "status": "current-snapshot"
     },
     {
@@ -2161,8 +2161,8 @@
     },
     {
       "path": "project-docs/STATUS.md",
-      "bytes": 2823,
-      "sha256": "080070792976b019171948fc7f16aef84331449f8c501ec455244349a8c79fb6",
+      "bytes": 2961,
+      "sha256": "bccf160e7c6e5c27ef8164e626f30e603ffcec677058900612cec509606e6d72",
       "status": "current-snapshot"
     },
     {
@@ -2173,14 +2173,14 @@
     },
     {
       "path": "project-docs/VALIDATION.md",
-      "bytes": 2173,
-      "sha256": "68dd05f39cc3fb69695fdfdad5f4903bff3f1024b2033f86931d5698cf735e5d",
+      "bytes": 2237,
+      "sha256": "5e4b2a57902211e380fce0ef501d44368f778b851222aa70616697882cdb3c49",
       "status": "current-snapshot"
     },
     {
       "path": "README.md",
-      "bytes": 1292,
-      "sha256": "9fe94ed358325b9a1fd5fdd09441174223902489011762049c92844247019b85",
+      "bytes": 1386,
+      "sha256": "1243c26d6dbef84924c03739ae072fa28ebdfc8fd62fa2a0bc16ab1b2d994c5b",
       "status": "current-snapshot"
     },
     {
@@ -2246,7 +2246,7 @@
     {
       "path": "START_HERE.md",
       "bytes": 2465,
-      "sha256": "4d23c2447cb26daf4c3b10d44deab374129fc8f6a87d77a528e6cfc5e53ba65d",
+      "sha256": "5c80d6de4334a77447753b873fef13929665c14edb86bcb28aa69ef47493bae3",
       "status": "current-snapshot"
     },
     {

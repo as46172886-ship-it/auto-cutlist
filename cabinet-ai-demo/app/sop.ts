@@ -1,5 +1,5 @@
 import { drawerDowelsPerDrawerForDepth, QUANTITY } from "./quantity-rules.ts";
-import { doorCountEvidenceIsClosed, doorIsReadyForHardware } from "./door-recognition.ts";
+import { doorCountEvidenceIsClosed, doorIsReadyForHardware, normalizeDoorGap24Fields } from "./door-recognition.ts";
 import { hingesPerDoorForFinishedHeight } from "./hinge-rules.ts";
 import { drawerWallHeightForFrontHeight, drawerWallHeightFormulaText } from "./drawer-rules.ts";
 import { slantedHandleConsistencyNote, type SlantedHandleMarkerEvidence } from "./slanted-handle-audit.ts";
@@ -25,6 +25,15 @@ export type DoorRead = {
   hingeCountPerDoor: number;
   evidence: string;
 };
+
+function normalizeCabinetDoorHints(cabinets: CabinetRead[]) {
+  return cabinets.map((cabinet) => ({
+    ...cabinet,
+    doors: (cabinet.doors || []).map((door) => normalizeDoorGap24Fields(
+      door as unknown as Record<string, unknown>,
+    ) as unknown as DoorRead),
+  }));
+}
 
 export type MiddleDividerRead = {
   depthMm: number;
@@ -301,15 +310,10 @@ export function calculateAdjustableShelfWidth(cabinet: CabinetRead) {
   };
 }
 
-function deductSlantedGap24(door: DoorRead) {
-  if (door.slantedGap24Context) return door.slantedGap24Context === "door_chain_included";
-  return Boolean(door.includesSlantedGap24);
-}
-
 export function resolveDoorFinishedHeight(door: DoorRead) {
   if (door.dimensionBasis === "finished") return n(door.finishedHeightMm);
   if (door.dimensionBasis !== "opening") return 0;
-  return n(door.openingHeightMm - (door.includesBottom30 ? 30 : 0) - (deductSlantedGap24(door) ? 24 : 0) - 4);
+  return n(door.openingHeightMm - (door.includesBottom30 ? 30 : 0) - 4);
 }
 
 export function resolveBaffleHeight(baffle: BaffleRead) {
@@ -489,7 +493,7 @@ export function calculateMiddleDividerDimensions(cabinetDepthMm: number, divider
 
 export function calculateSop(input: CabinetRead[] | AnalysisForSop) {
   const analysis: AnalysisForSop = Array.isArray(input) ? { cabinets: input } : input;
-  const cabinets = analysis.cabinets || [];
+  const cabinets = normalizeCabinetDoorHints(analysis.cabinets || []);
   const cuts: CutRow[] = [];
   const hardware: HardwareRow[] = [];
   const notes: string[] = [];
@@ -565,7 +569,7 @@ export function calculateSop(input: CabinetRead[] | AnalysisForSop) {
       if (jHandleCount > n(door.count)) notes.push(`${label} 的J把加工數${jHandleCount}支超過4E門${n(door.count)}片，已阻止輸出錯誤門把五金。`);
       if (jHandleCount + n(door.slantedHandleCount) > n(door.count)) notes.push(`${label} 的J把${jHandleCount}支＋斜把${n(door.slantedHandleCount)}支超過4E門${n(door.count)}片，同一門片不可重複套兩種手把；已暫停該組門板與門五金。`);
       if (!doorIsReadyForHardware(door)) {
-        notes.push(`${label} 已鎖定${n(door.count)}片<／>門片；門尺寸或24mm斜把縫關係尚未閉合，或手把數量矛盾，所以只暫停該門板尺寸與門用五金，不取消片數。`);
+        notes.push(`${label} 已鎖定${n(door.count)}片<／>門片；門尺寸或斜把加工樣式尚未閉合，或手把數量矛盾，所以只暫停該門板尺寸與門用五金，不取消片數。`);
         continue;
       }
       let doorWidth = 0;
@@ -575,11 +579,11 @@ export function calculateSop(input: CabinetRead[] | AnalysisForSop) {
         doorHeight = n(door.finishedHeightMm);
       } else if (door.dimensionBasis === "opening") {
         doorWidth = n(door.openingWidthMm / door.count - 3);
-        doorHeight = n(door.openingHeightMm - (door.includesBottom30 ? 30 : 0) - (deductSlantedGap24(door) ? 24 : 0) - 4);
+        doorHeight = n(door.openingHeightMm - (door.includesBottom30 ? 30 : 0) - 4);
       }
       const doorFormula = door.dimensionBasis === "finished"
         ? `完成門面${doorWidth}×${doorHeight}，不再扣4`
-        : `單門寬=${n(door.openingWidthMm)}÷${n(door.count)}-3=${doorWidth}；門高=${n(door.openingHeightMm)}${door.includesBottom30 ? "-30" : ""}${deductSlantedGap24(door) ? "-24" : ""}-4=${doorHeight}`;
+        : `單門寬=${n(door.openingWidthMm)}÷${n(door.count)}-3=${doorWidth}；門高=${n(door.openingHeightMm)}${door.includesBottom30 ? "-30" : ""}-4=${doorHeight}`;
       if (doorWidth && doorHeight) cuts.push({ item: "4E門板", spec: spec(doorWidth, doorHeight), qty: n(door.count), note: cutNote(cabinet, "R37-R45", `${doorFormula}／${cabinetDoorNote(door)}${door.evidence ? `／圖據：${door.evidence}` : ""}`) });
       else notes.push(`${label} 的4E門尚未分清開口尺寸或完成門面尺寸，未計門板。`);
       if (jHandleCount > 0 && jHandleCount <= n(door.count)) hardware.push({ item: "J型手把", qty: jHandleCount, unit: "支", note: `[R43/R44] ${cabinet.name}／依實際J把加工門片與起開註記` });
@@ -800,6 +804,7 @@ export function assertDrawerFrontClosure(input: AnalysisForSop) {
  * and mirrors that are derived outside the core cabinet-body formulas.
  */
 export function calculateCompleteSop(input: AnalysisForSop) {
+  input = { ...input, cabinets: normalizeCabinetDoorHints(input.cabinets || []) };
   assertDrawerFrontClosure(input);
   const drawerFronts: IndependentPanelRead[] = [];
   const slantedHandlesByGroup = new Map<string, number>();

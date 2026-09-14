@@ -12,6 +12,7 @@ import {
   applyDoorRecognition,
   collectResolvedDoorGap24Locks,
   doorCountEvidenceIsClosed,
+  doorIsReadyForHardware,
   doorReadUsesOnlyKnownSymbolCrops,
   lockableDoorRead,
   normalizeDoorGap24Fields,
@@ -537,7 +538,7 @@ test("uses current back-strip thresholds for ordinary floor cabinets", () => {
   assert.equal(tall.materials.find((row) => row.item === "背條").qty, 2);
 });
 
-test("calculates 4E door as width by height and avoids double deductions", () => {
+test("2.4 hint does not change opening-based door height while finished dimensions stay authoritative", () => {
   const openingDoor = {
     type: "4E", count: 2, countBasis: "symbols", doorSymbols: ["<", ">"], openingWidthMm: 900, openingHeightMm: 700, finishedWidthMm: 0, finishedHeightMm: 0,
     dimensionBasis: "opening", direction: "mixed", jHandleCount: 0, slantedHandle: true, includesBottom30: false,
@@ -546,11 +547,11 @@ test("calculates 4E door as width by height and avoids double deductions", () =>
   const finishedDoor = { ...openingDoor, count: 1, doorSymbols: ["<"], slantedHandleCount: 1, dimensionBasis: "finished", finishedWidthMm: 447, finishedHeightMm: 672, includesSlantedGap24: false, slantedGap24Context: "already_separate" };
   const opening = calculateSop([{ ...baseCabinet, doors: [openingDoor] }]);
   const finished = calculateSop([{ ...baseCabinet, doors: [finishedDoor] }]);
-  assert.equal(opening.materials.find((row) => row.item === "4E門板").spec, "447 × 672");
+  assert.equal(opening.materials.find((row) => row.item === "4E門板").spec, "447 × 696");
   assert.equal(finished.materials.find((row) => row.item === "4E門板").spec, "447 × 672");
 });
 
-test("locks a resolved 24mm context so later AI passes cannot change or double-deduct it", () => {
+test("preserves a positive 24mm hint across passes without using it as a door-height deduction", () => {
   const lockedDoor = {
     type: "4E", count: 1, countBasis: "symbols", doorSymbols: ["<"], openingWidthMm: 900, openingHeightMm: 700,
     finishedWidthMm: 0, finishedHeightMm: 0, dimensionBasis: "opening", direction: "left", jHandleCount: 0,
@@ -571,22 +572,25 @@ test("locks a resolved 24mm context so later AI passes cannot change or double-d
   const door = restored.cabinets[0].doors[0];
   assert.equal(door.slantedGap24Context, "door_chain_included");
   assert.equal(door.includesSlantedGap24, true);
-  assert.equal(calculateSop(restored).materials.find((row) => row.item === "4E門板").spec, "897 × 672");
+  assert.equal(calculateSop(restored).materials.find((row) => row.item === "4E門板").spec, "897 × 696");
 });
 
-test("closes an explicit includes-24 decision and does not start another completeness repair", () => {
+test("a visible 24mm hint positively identifies a slanted handle without creating a relation blocker", () => {
   const door = normalizeDoorGap24Fields({
     type: "4E", count: 1, countBasis: "symbols", doorSymbols: [">"], openingWidthMm: 400, openingHeightMm: 700,
     finishedWidthMm: 0, finishedHeightMm: 0, dimensionBasis: "opening", direction: "right", jHandleCount: 0,
-    slantedHandle: true, slantedHandleCount: 1, slantedHandleStyle: "long", includesBottom30: false, includesSlantedGap24: true,
+    slantedHandle: false, slantedHandleCount: 0, slantedHandleStyle: "top", includesBottom30: false, includesSlantedGap24: true,
     slantedGap24Context: "unknown", hingeCountPerDoor: 0, evidence: "已辨識含24mm斜把縫",
   });
   assert.equal(door.slantedGap24Context, "door_chain_included");
   assert.equal(door.includesSlantedGap24, true);
+  assert.equal(door.slantedHandle, true);
+  assert.equal(door.slantedHandleCount, 1);
+  assert.equal(doorIsReadyForHardware(door), true);
   assert.equal(findInteriorCompletenessErrors(structure([{ ...baseCabinet, doors: [door] }])).some((error) => /24mm/.test(error)), false);
 });
 
-test("an unresolved 24mm relation stays advisory-only instead of triggering another AI repair", () => {
+test("an unknown 24mm relation neither blocks output nor produces an advisory", () => {
   const door = {
     type: "4E", count: 1, countBasis: "symbols", doorSymbols: ["<"], openingWidthMm: 400, openingHeightMm: 700,
     finishedWidthMm: 0, finishedHeightMm: 0, dimensionBasis: "opening", direction: "left", jHandleCount: 0,
@@ -594,7 +598,9 @@ test("an unresolved 24mm relation stays advisory-only instead of triggering anot
     slantedGap24Context: "unknown", hingeCountPerDoor: 0, evidence: "有斜把但尺寸鏈模糊",
   };
   assert.equal(findInteriorCompletenessErrors(structure([{ ...baseCabinet, doors: [door] }])).some((error) => /24mm/.test(error)), false);
-  assert.match(calculateSop([{ ...baseCabinet, doors: [door] }]).notes.join(" "), /24mm斜把縫關係尚未閉合/);
+  const calculated = calculateSop([{ ...baseCabinet, doors: [door] }]);
+  assert.equal(calculated.materials.find((row) => row.item === "4E門板").spec, "397 × 696");
+  assert.doesNotMatch(calculated.notes.join(" "), /24mm|2\.4/);
 });
 
 test("blocks a width chain that does not close", () => {
@@ -979,7 +985,7 @@ test("closes drawer totals, inner-drawer totals and usable slide depth", () => {
   assert.match(shallow.join(" "), /滑軌可用深度不足/);
 });
 
-test("closes door symbols, handle quantities and the 24mm gap context", () => {
+test("closes door symbols and handle quantities without requiring a 24mm context", () => {
   const door = {
     type: "4E", count: 2, countBasis: "symbols", doorSymbols: ["<"], openingWidthMm: 900, openingHeightMm: 700,
     finishedWidthMm: 0, finishedHeightMm: 0, dimensionBasis: "opening", direction: "mixed", jHandleCount: 3,
@@ -990,10 +996,10 @@ test("closes door symbols, handle quantities and the 24mm gap context", () => {
   assert.match(errors.join(" "), /數量2片／開向符號1個/);
   assert.doesNotMatch(errors.join(" "), /J把3／斜把3|24mm斜把縫扣法未確認|鉸鍊/);
 
-  const baseOne = { ...door, count: 1, doorSymbols: ["<"], direction: "left", jHandleCount: 0, slantedHandle: false, slantedHandleCount: 0 };
+  const baseOne = { ...door, count: 1, doorSymbols: ["<"], direction: "left", jHandleCount: 0, slantedHandle: true, slantedHandleCount: 1, slantedHandleStyle: "long" };
   const included = calculateSop([{ ...baseCabinet, doors: [{ ...baseOne, includesSlantedGap24: true, slantedGap24Context: "door_chain_included" }] }]);
   const stacked = calculateSop([{ ...baseCabinet, doors: [{ ...baseOne, includesSlantedGap24: false, slantedGap24Context: "stacked_lift" }] }]);
-  assert.equal(included.materials.find((row) => row.item === "4E門板").spec, "897 × 672");
+  assert.equal(included.materials.find((row) => row.item === "4E門板").spec, "897 × 696");
   assert.equal(stacked.materials.find((row) => row.item === "4E門板").spec, "897 × 696");
 });
 
@@ -1087,7 +1093,7 @@ test("an alphanumeric door callout remains a door type or identifier", () => {
   assert.match(result.questions.join(" "), /門＋英文字母／代碼/);
 });
 
-test("numeric door height deducts a 24mm slanted gap exactly once when it belongs to the same chain", () => {
+test("numeric door height ignores 24mm as arithmetic while retaining its slanted-handle hint", () => {
   const door = {
     type: "4E", count: 1, countBasis: "symbols", doorSymbols: [">"], openingWidthMm: 0, openingHeightMm: 0,
     finishedWidthMm: 0, finishedHeightMm: 0, dimensionBasis: "unknown", direction: "right", jHandleCount: 0,
@@ -1096,7 +1102,7 @@ test("numeric door height deducts a 24mm slanted gap exactly once when it belong
   };
   const result = validateCabinetStructure(structure([{ ...baseCabinet, heightMm: 1472, doors: [door], drawingNotes: ["門509"] }]));
   assert.equal(result.cabinets[0].doors[0].finishedWidthMm, 507);
-  assert.equal(result.cabinets[0].doors[0].finishedHeightMm, 1444);
+  assert.equal(result.cabinets[0].doors[0].finishedHeightMm, 1468);
   const calculated = calculateSop({ cabinets: result.cabinets });
   assert.equal(calculated.hardware.some((row) => row.item === "斜手把"), false);
   assert.match(calculated.materials.find((row) => row.item === "4E門板").note, /長斜把×1.*完整模式另列斜手把五金/);
@@ -1217,8 +1223,23 @@ test("door-only gaps become one non-blocking reminder while cabinet materials ca
   assert.deepEqual(filterBlockingIssues(issues, analysis), []);
   const reminders = mergeDoorAdvisoryIssues(applicable);
   assert.equal(reminders.length, 1);
-  assert.match(reminders[0], /C01、C02.*開口尺寸／完成門面尺寸.*24mm斜把縫關係/);
+  assert.match(reminders[0], /C01、C02.*開口尺寸／完成門面尺寸/);
+  assert.doesNotMatch(reminders[0], /24mm|2\.4/);
   assert.match(reminders[0], /桶身及其他已確認料件照常拆料/);
+});
+
+test("legacy 24mm relationship wording is discarded instead of blocking or reminding", () => {
+  const legacyIssue = "E01-C01：門片尺寸、斜把樣式或24mm關係尚未閉合";
+  const analysis = structure([{ ...baseCabinet, doors: [{
+    type: "4E", count: 1, countBasis: "symbols", doorSymbols: ["<"],
+    openingWidthMm: 400, openingHeightMm: 700, finishedWidthMm: 0, finishedHeightMm: 0,
+    dimensionBasis: "opening", direction: "left", jHandleCount: 0,
+    slantedHandle: true, slantedHandleCount: 1, slantedHandleStyle: "long",
+    includesBottom30: false, includesSlantedGap24: true, slantedGap24Context: "unknown",
+    hingeCountPerDoor: 0, evidence: "2.4cm提示",
+  }] }]);
+  assert.deepEqual(filterBlockingIssues([legacyIssue], analysis), []);
+  assert.deepEqual(mergeDoorAdvisoryIssues([legacyIssue]), []);
 });
 
 test("a stale request for an already locked door count and direction is removed", () => {

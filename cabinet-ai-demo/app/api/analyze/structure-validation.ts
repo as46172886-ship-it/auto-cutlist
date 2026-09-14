@@ -248,13 +248,12 @@ export function normalizeDeterministicInterior(cabinets: JsonRecord[]) {
             : 0;
         if (heightBasis > 4) {
           const bottomDeduction = normalizedDoor.includesBottom30 ? 30 : 0;
-          const slantedGapDeduction = normalizedDoor.slantedGap24Context === "door_chain_included" || (!normalizedDoor.slantedGap24Context && normalizedDoor.includesSlantedGap24) ? 24 : 0;
-          const finishedHeight = heightBasis - bottomDeduction - slantedGapDeduction - 4;
+          const finishedHeight = heightBasis - bottomDeduction - 4;
           if (finishedHeight > 0) {
             normalizedDoor.finishedWidthMm = nominalDoorWidth - 2;
             normalizedDoor.finishedHeightMm = finishedHeight;
             normalizedDoor.dimensionBasis = "finished";
-            normalizedDoor.evidence = `${String(normalizedDoor.evidence || "")}；[R38] 純數字門標記門${nominalDoorWidth}：完成門寬${nominalDoorWidth}-2=${nominalDoorWidth - 2}；門高基準${heightBasis}${bottomDeduction ? "-30" : ""}${slantedGapDeduction ? "-24" : ""}-4=${finishedHeight}`.replace(/^；/, "");
+            normalizedDoor.evidence = `${String(normalizedDoor.evidence || "")}；[R38] 純數字門標記門${nominalDoorWidth}：完成門寬${nominalDoorWidth}-2=${nominalDoorWidth - 2}；門高基準${heightBasis}${bottomDeduction ? "-30" : ""}-4=${finishedHeight}`.replace(/^；/, "");
           }
         }
       }

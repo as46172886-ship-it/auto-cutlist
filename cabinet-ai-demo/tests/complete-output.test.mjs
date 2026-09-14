@@ -27,7 +27,7 @@ test("complete mode includes 4E doors, hinges, dampers and slanted handles", () 
     }],
   })] });
   const door = result.materials.find((row) => row.item === "4E門板");
-  assert.deepEqual({ item: door?.item, spec: door?.spec, qty: door?.qty }, { item: "4E門板", spec: "457 × 612", qty: 2 });
+  assert.deepEqual({ item: door?.item, spec: door?.spec, qty: door?.qty }, { item: "4E門板", spec: "457 × 636", qty: 2 });
   assert.match(door?.note || "", /長斜把×2/);
   assert.equal(result.hardware.find((row) => row.item === "GS鉸鍊")?.qty, 4);
   assert.equal(result.hardware.find((row) => row.item === "油壓器")?.qty, 2);

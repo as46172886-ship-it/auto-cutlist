@@ -106,7 +106,7 @@ export const DIMENSION_INSTRUCTIONS = `你是第一階段「尺寸證據抄錄�
 5. 深度必須單獨搜尋：查看D、深、DEPTH、側視圖水平尺寸、立面上方／下方的共用註記，以及另一張對應內部圖。深度標註不一定貼在每個桶身旁邊。
 6. 一個深度若明確套用同一排、同一立面或一群櫃體，建立一個depthGroup，列出適用區域；後續櫃體要共用，不可逐桶填0再逐桶提問。
 7. 617、2272之類的數字不可只看數值猜深度；必須依尺寸線方向、側視位置或文字註記判斷。617若是垂直線就是高度，不是深度。
-8. 2.4cm出現在門面高度鏈或兩門面之間時，優先分類slanted_handle_gap=24mm；標準18mm桶身板不能因看到2.4就改成24mm板。只有明確T24、板厚24或厚度線才可分類board_thickness。
+8. 2.4cm出現在門面高度鏈或兩門面之間時，優先分類slanted_handle_gap=24mm，並只把它當成「此處有斜把」的肯定提示；不必判斷它包含在哪段門高，也不參與門板尺寸扣除。沒看到2.4不代表沒有斜把，後續仍須看門面或屜頭是否有一條斜把空隙。標準18mm桶身板不能因看到2.4就改成24mm板；只有明確T24、板厚24或厚度線才可分類board_thickness。
 9. 複合文字如「鏡子35*130」要拆成350mm寬與1300mm高兩筆note尺寸，保留同一文字證據。
 10. 不清楚的數字可標unknown，但必須說明它在圖上的位置；禁止杜撰未出現的數字。
 11. 圖面若以cm標示，例39.4必須輸出394mm；若原圖已是mm則不乘10。
@@ -119,7 +119,7 @@ export const DIMENSION_INSTRUCTIONS = `你是第一階段「尺寸證據抄錄�
 
 export const STRUCTURE_INSTRUCTIONS = `你是第二階段「系統櫃結構判讀員」。你會收到第一階段尺寸證據表，並重新查看原圖。先把每個尺寸綁定到正確物件，再依完整SOP建立結構；此階段仍不可拆料或算五金。
 
-你收到的每一張輸入都是依底部水平尺寸段真裁切、放大的單一桶身。任務文字中的「前置方向與分桶硬鎖」是不可覆蓋的輸入事實：rotation、cabinetId、elevationId、左右順序、底部水平桶寬與桶數全部不得重判、換軸、合桶、拆桶或改名。必須一桶一桶查，禁止用整張立面概括。每桶先建立componentRegions：逐區分類側板、頂底板、背板、背條、固格、活格、中立、擋板、抽屜、抽面、4E門、鋁框門、固定板或未知，再把該分類對應的Rxx填入sopRuleIds，最後才更新結構欄位。門片數與<／>開向已由更早的像素複核鎖定；本階段不得新增、刪除或改寫type、count、countBasis、doorSymbols、direction，但必須另外核對並補齊已鎖定門片的開口／完成尺寸、24mm脈絡與把手資料。
+你收到的每一張輸入都是依底部水平尺寸段真裁切、放大的單一桶身。任務文字中的「前置方向與分桶硬鎖」是不可覆蓋的輸入事實：rotation、cabinetId、elevationId、左右順序、底部水平桶寬與桶數全部不得重判、換軸、合桶、拆桶或改名。必須一桶一桶查，禁止用整張立面概括。每桶先建立componentRegions：逐區分類側板、頂底板、背板、背條、固格、活格、中立、擋板、抽屜、抽面、4E門、鋁框門、固定板或未知，再把該分類對應的Rxx填入sopRuleIds，最後才更新結構欄位。門片數與<／>開向已由更早的像素複核鎖定；本階段不得新增、刪除或改寫type、count、countBasis、doorSymbols、direction，但必須另外核對並補齊已鎖定門片的開口／完成尺寸與把手資料。2.4／24mm只提示有斜把，不是待閉合的尺寸關係。
 
 固定判讀順序：
 1. 對照檔名／視圖，配對同一案的內部圖、門板圖、正立面與側視圖。
@@ -141,9 +141,9 @@ export const STRUCTURE_INSTRUCTIONS = `你是第二階段「系統櫃結構判�
    - M008=1000若標在「缺口」或門面加工區，未證明端點前不得當成桶身開口高度；M013=159若只是右側連續高櫃的局部垂直分段，不得另造獨立板件。兩者可記錄為非阻擋提醒，不因而阻擋已閉合的桶身外尺寸。
 
 重要欄位定義：
-- door.openingWidthMm／openingHeightMm 是整個開口尺寸；dimensionBasis=opening時後端才依SOP計算。finishedWidthMm／finishedHeightMm 必須是「單片」已完成門面尺寸，dimensionBasis=finished時後端不再扣3、4、24或30。
-   - 門片數與開向只能沿用第一優先像素複核的鎖定結果。只有位於門面葉片區的清楚<／>可成立symbols；禁止用leaf_geometry、寬度、對稱或AI經驗補門片。未鎖定門板保持空陣列並提醒，不得在結構階段補猜。尺寸、24mm脈絡、J把與斜把是另一條資料線：可依尺寸證據補入，但任何不確定都不得清除已鎖定的<／>。
-- 每一組4E門必須填slantedGap24Context：24包含在同一門高鏈才是door_chain_included且後端扣一次；已是獨立分段填already_separate；疊櫃抬門填stacked_lift；確定無關填none；讀不清才填unknown並列非阻擋提醒。只要本階段依圖面證據判定為door_chain_included／already_separate／stacked_lift，後端立即鎖定，後續複核不得推翻或重複扣24；只有使用者明確更正24mm、2.4、斜把或門縫時才可重判。includesSlantedGap24只在door_chain_included時為true。
+- door.openingWidthMm／openingHeightMm 是整個開口尺寸；dimensionBasis=opening時後端才依SOP計算。finishedWidthMm／finishedHeightMm 必須是「單片」已完成門面尺寸，dimensionBasis=finished時後端不再扣3、4或30；24mm不參與門高扣除。
+   - 門片數與開向只能沿用第一優先像素複核的鎖定結果。只有位於門面葉片區的清楚<／>可成立symbols；禁止用leaf_geometry、寬度、對稱或AI經驗補門片。未鎖定門板保持空陣列並提醒，不得在結構階段補猜。門尺寸、J把與斜把是另一條資料線：可依尺寸及加工證據補入，但任何不確定都不得清除已鎖定的<／>。
+- 2.4cm／24mm只是一個斜把提示：看見時，對應門板或屜頭直接判為有斜把，再從空隙位置判上斜把、下斜把或長斜把；沒看見時仍檢查是否存在斜把空隙，不能用「沒有2.4」直接判成普通面。不得詢問24mm屬於含縫總高、獨立分段或疊櫃抬高，也不得用它扣門高。相容欄位固定填includesSlantedGap24=false、slantedGap24Context=none。
 - 本階段只建立桶身與內裝基準：topBoardRetreatMm=0、bottomBoardRetreatMm=0、slantedFixedShelfCount=0、baffles=[]。門與屜頭完成最後獨立掃描後，才可按各自斜把證據回算實際頂板／底板退縮與擋板；本次不改固格尺寸。
 - fixedShelves逐片計數；所有看得清楚的F中心線高度以mm填入fixedShelfPositionsMm。F是含頂底量到固格中心線，不得扣成板邊。
 - drawerGroup.centerlineBoundaryCount填0／1／2，表示抽屜格有幾側尺寸到中立中心線；usesCenterlineWidth必須與其是否大於0一致。後端會依此固定套-99／-90／-81，內抽再-50。regionPosition填top／middle／bottom／unknown；圖面明確是上方並排抽時必須填top，讓後端可用H與F中心線補出只在上方抽屜區的中立。
@@ -154,13 +154,13 @@ export const STRUCTURE_INSTRUCTIONS = `你是第二階段「系統櫃結構判�
 - baffles每一支實體擋板建立一筆獨立id，並先填mountBasis=top_board／fixed_shelf／raised_bottom／other／unknown。鎖固格或上升底板由後端固定60mm；只有已確認純門斜把且鎖頂板的門櫃擋板才50mm。整桶內寬用widthBasis=cabinet_inner，widthMm可填0讓後端固定算W-36；若被中立分段則每段各一筆finished_segment，使用同一segmentGroupId並填1..N的segmentIndex、segmentCount=N，不能只設splitAtMiddleDivider=true卻只有一筆。
 - drawingNotes只抄圖上看得見且會影響結構／加工的註記；顏色、材質、色號可保留在warnings，但不能阻擋拆料。
 - independentPanels、kickboards、mirrors、specialHardware 每筆都必須填所屬 elevationId；不同立面的相同品項不得先加總。independentPanels 放獨立封板、填縫板與其他非桶身板件。圖面辨識到櫃身外側與全高牆／收口線分離時，填縫板標準寬固定100mm、高度取相鄰桶身外高、不含腳高與上方留空，左右每一個不同邊界各1片；圖面明標其他完成寬時才覆蓋100mm。其他板件count未知仍填0並阻擋；封板有直紋且需高×寬時 dimensionOrder=height_width。
-- 純數字「門N」不是門號：普通全高4E門固定算完成門寬=N-2，完成門高=桶身外高-底部30（若同鏈包含）-24斜把縫（只有door_chain_included時）-4。例：門509、H1472且無30／24分段，完成門507×1468。含英文字母的門A12才保留為門型／門號。普通4E門每片自動帶1個油壓器；斜把只寫「長斜把×N」加工價格備註，不列specialHardware或五金料單。
+- 純數字「門N」不是門號：普通全高4E門固定算完成門寬=N-2，完成門高=桶身外高-底部30（若同鏈包含）-4；2.4／24mm只提示斜把，不扣門高。例：門509、H1472且無底部30分段，完成門507×1468。含英文字母的門A12才保留為門型／門號。普通4E門每片自動帶1個油壓器；斜把只寫「長斜把×N」加工價格備註，不列specialHardware或五金料單。
 - specialHardware只要辨識到品項就必須保留；qty或unit不明時填0／空字串並提出阻擋問題，禁止從陣列刪除。
 - specialBackStripCount 只在圖面或已確認答案明確給特殊櫃背條數時填正數；一般櫃填0，由後端依正式高度規則計算。
 - 「鏡子35*130」若文字及指引線清楚，直接記錄widthMm=350、heightMm=1300，不得再詢問是否為鏡子尺寸。
 - 若水平底鏈為40／80／60，候選桶寬只能從400／800／600及圖上真正的水平次級鏈推得。55.2／2.4／16若在線條旋正後為垂直鏈，只能用於高度／間隙，禁止生成552、24、160寬桶或488剩餘寬。
 - 精確回歸例：水平40／80／60 + 三處D42.6 + 左側垂直55.2／2.4／16 + 右側外總高227.2、內分段163.1／2.4／61.7且側板連續時，建立三個桶身：W400×H736×D426、W800×H736×D426、W600×H2272×D426。右側600不可另拆上櫃；9.5是離地95mm；鏡子35×130列mirrors，不列cabinet。W400上方是一個抽屜，W800上方是兩個並排抽屜且該drawerGroup.regionPosition=top、fixedShelfPositionMm=552；因此應有1片中立，只做到上方抽屜區，referenceSpan=736-552=184，上接頂板18、下接固格中心線9，完成高157，深D-29=397。下方門區不得延伸中立。右側高櫃的擋板若圖面顯示鎖在固格，mountBasis=fixed_shelf且高度固定60，不得保留成door_50。
-- 2.4cm位在上下門面之間時是24mm斜把縫，不是24mm厚水平板；標準桶身板厚仍為18mm。
+- 2.4cm位在門面附近時只當斜把肯定提示，不是24mm厚水平板，也不參與門高扣除；標準桶身板厚仍為18mm。沒有2.4時仍須看是否有一條斜把空隙。
 
 以下 ${SOP_RULE_COUNT} 條是完整且逐條強制的正式SOP，不得用一般木工常識覆蓋：
 ${SOP_PROMPT}
@@ -178,8 +178,8 @@ C. 高度：外側總高優先；門面分段高、617等局部垂直尺寸不�
 D. 桶身：側板連續時不得因水平門縫拆成疊櫃；只有獨立頂底、側板中斷、深度分離或明確標註才成立疊櫃。精確例：227.2外總高與163.1／2.4／61.7連續垂直鏈同時存在，且600寬柱的兩側板連續，結論只能是一個W600×H2272桶身，不是上下兩桶。
 E. 獨立件：封板、鏡子、門板、踢腳板與局部板件不得留在 cabinets。
 F. 斜把：只把真正形成斜把空間的頂板、底板或固格標 retreat19；擋板50／60及中立分段必須有圖面依據。
-F2. 板厚與鎖定：24mm若在門面垂直鏈中且第一階段分類slanted_handle_gap，只能是斜把縫，絕不可稱為24mm厚板；除非原圖明寫T24或板厚24。第二階段已判定的24mm脈絡是鎖定值，本階段只能驗證計算是否只套一次，不得改回unknown或換成另一種扣法。
-G. 門與抽屜：完成門面高不可再扣4；24縫不可重扣；抽屜中心線邊界0／1／2必須分別套-99／-90／-81；中立只做到實際分隔區，深度一般D-29，高度依完整板18／固格中心線9逐端扣除；鋁框門不列但桶身保留。
+F2. 板厚與斜把提示：24mm若在門面垂直鏈中且第一階段分類slanted_handle_gap，只能作「有斜把」提示，絕不可稱為24mm厚板；除非原圖明寫T24或板厚24。不得要求判定24mm屬於哪一段，也不得用它扣門高。
+G. 門與抽屜：完成門面高不可再扣4；2.4／24mm只提示斜把；抽屜中心線邊界0／1／2必須分別套-99／-90／-81；中立只做到實際分隔區，深度一般D-29，高度依完整板18／固格中心線9逐端扣除；鋁框門不列但桶身保留。
 G2. 固格與註記：本次自動流程的固格一律核對D-29×W-36，不由門面影像改成D-48；F中心線高度、上18下18、缺口、下起開、4P、J把與斜把註記不得在驗算時消失。
 H. 問題：已能從證據表、尺寸鏈或同群櫃體推得的資料不得再問；合併重複問題，但所有真正阻擋問題都必須保留，不能因題數上限省略。
 
@@ -196,7 +196,7 @@ const INTERIOR_INSTRUCTIONS = `你是第三階段「桶身內部逐件複核員�
 5. 並排抽屜必須有middleDividers，且並排N列固定需要N-1片完整中立，只做到實際抽屜分隔區。一般中立深度填depthBasis=standard_d_minus_29；高度以referenceSpanMm及上下接點交由後端扣完整板18／中心線9。只有原圖直接給完成尺寸才用finished；資料不全用unknown並提問，禁止套H-36。下方大門區不得延伸中立。
    - 每個drawerGroup另填regionPosition；明確在上方且下接F固格中心線時填top與fixedShelfPositionMm。若H與F已確認，後端會用上方跨度H−F自動建立缺少的N−1片中立，禁止再問使用者已可由圖面算出的中立數量或高度。
 6. 逐片盤點斜把相關baffles，先填mountBasis判斷鎖附在頂板、固格或上升底板，再決定50／60與是否依中立分段；鎖固格／上升底板固定60，只有已確認純門斜把且鎖頂板才50；有N個分段就建立N筆實體擋板及完整segmentGroupId／segmentIndex／segmentCount。
-7. 4E門的片數與<／>完全沿用前一階段逐桶像素鎖定值，不得覆蓋。未鎖定的門板保持空陣列；已鎖定的type、count、countBasis、doorSymbols、direction不得更動。門寬、門高、24mm脈絡、J把與斜把必須另看尺寸鏈與加工註記補齊；24mm一旦依證據判定就鎖定且只套一次，後續不得重開問題或改回unknown；仍看不清只列該欄的非阻擋提醒，絕不可刪除已鎖定門片。鉸鍊依完成門高由後端正式公式自動算，不提問顆數。
+7. 4E門的片數與<／>完全沿用前一階段逐桶像素鎖定值，不得覆蓋。未鎖定的門板保持空陣列；已鎖定的type、count、countBasis、doorSymbols、direction不得更動。門寬、門高、J把與斜把必須另看尺寸鏈與加工註記補齊；2.4／24mm出現時直接作為有斜把的肯定提示，沒有時再看是否有斜把空隙。不得要求24mm關係、不得用它扣門高，也不得因此刪除已鎖定門片。鉸鍊依完成門高由後端正式公式自動算，不提問顆數。
 8. 每桶都要核對boardProfile、footState及特殊櫃specialBackStripState；所有獨立板件必須有count；辨識到的特殊五金即使數量未知也不可刪除。
 9. 不得把前一階段已存在且有證據的drawerGroups、固格、活格、中立、擋板、fixedShelfPositionsMm、drawingNotes、independentPanels或specialHardware整批清空。若原圖明確證明某項不存在才可刪除；已確認不存在的項目不必在warnings列「0項」，只有刪除與前階段證據矛盾、可能造成漏料時才提醒。
 10. 最終projectName、summary、questions、warnings只用現場可讀的繁體中文。沒有案件名就用「本次圖面」；禁止輸出UUID、尺寸ID、抽屜組內部代碼或任何程式欄位名稱。可由本輪圖面證據成立的門片數、中立與擋板必須直接補入結構，不得保留舊問題重複詢問；已確認不存在或不適用的項目不得留問題、提醒或0數量占位文字。
@@ -214,7 +214,7 @@ const DOOR_RECOGNITION_INSTRUCTIONS = `你是第一優先的「<／>符號掃描
 2. 尺寸線箭頭、註記引線箭頭、層板線、抽屜框線、小方塊、24mm縫，以及門邊孤立的彩色小三角都不是門片開向符號；彩色小三角只能供後續斜把加工核對。大型虛線若被層板線或裁切邊界截斷，必須在重疊裁切中找到兩條斜線及共同尖端才可判向，不得用單一斜線猜測。
 3. 只收錄本次裁切中肉眼能直接指出位置的符號。高對比圖與斜向遮罩只能協助定位；每個符號必須回到同輪提供的第一輪原始門面／桶內裁切再次看見，symbolRegions.cropName固定引用該原始裁切，不得引用p2／p3輔助圖。每個符號都填symbolRegions：symbol、實際原始cropName、所在門面區域、該裁切內0–1000的x／y及簡短證據。
 4. doorSymbols長度=count，countBasis固定symbols；依圖面由左到右、由上到下排列。若無法判斷兩符號是否同一門組，寧可每個符號各建一筆count=1，也不能丟掉清楚符號。
-5. 這一階段所有尺寸固定填0、dimensionBasis=unknown；J把與斜把數量填0、slantedGap24Context=unknown、hingeCountPerDoor=0。禁止因這些欄位未知而把已看見的符號改成unknown或刪除。
+5. 這一階段所有尺寸固定填0、dimensionBasis=unknown；J把與斜把數量填0、includesSlantedGap24=false、slantedGap24Context=none、hingeCountPerDoor=0。禁止因這些欄位未知而把已看見的符號改成unknown或刪除。
 6. 找到至少一個清楚符號就把它放入doors。若所有可能門面都已掃清，status=confirmed_4e；若仍有其他模糊門樣區，status=partial，但清楚符號仍必須保留並會由後端立即鎖定。後一輪即使信心較高，也只能新增另一個清楚符號，不能把前一輪的<翻成>、把>翻成<或清掉。
 7. 找不到符號時，evidence及unresolvedDoorRegions必須明寫原因：沒有門面裁切、符號太小、被裁切邊界切斷、對比不足、與尺寸箭頭重疊，或該區確實無符號；並指出需要哪個區域的放大圖。不可只寫「不確定」。
 8. confirmed_no_4e僅限確有door/front裁切，且所有表面都能明確分類為抽面、鋁框門、固定板或非門；後端仍要求三次一致。只有internal裁切不得宣告無門。
@@ -469,7 +469,7 @@ async function runStructureByCabinet(
       const oneCabinetPlan: SegmentationPlan = { ...segmentation, cabinets: [segment] };
       const run = await callWithRetry(key, segmentImages, {
         instructions: STRUCTURE_INSTRUCTIONS,
-        taskText: `這次只判讀一個已裁切桶身，輸出cabinets必須恰好一筆。不得建立相鄰桶、不得把整排合成一桶，也不得用側邊垂直高度鏈改寫桶寬。\n\n前置方向與分桶硬鎖：${JSON.stringify(segmentationLockSummary(oneCabinetPlan))}\n\n本桶裁切規劃：${JSON.stringify(cabinetCropSummary(oneCabinetPlan))}\n\n本桶實際像素裁切與邊界提示：${JSON.stringify(cabinetCropEvidenceHints(segmentCropInputs))}\n\n已鎖正方向的尺寸證據表：${JSON.stringify(dimensionLedger)}\n\n先完整盤點componentRegions，再逐片數活動層板；看得見實體水平層板而沒有F中心線、固格或固定層板的肯定標記時，依R24直接列活格，不再詢問固格／活格。<／>斜向門片標記只是覆蓋標記，不得遮掉或取消其後仍清楚可見的水平層板。若有全高中立，逐格數每一道水平板；同高板線在中立兩側都存在時固定算左右各1片，不能只計一側，也不能跨過中立。門片符號與片數由最後的獨立掃描鎖回，本階段只能補門尺寸、24mm脈絡與把手；純數字「門N」是普通4E門名義門寬，完成門寬固定N-2，含字母「門A12」才是門型／門號。`,
+        taskText: `這次只判讀一個已裁切桶身，輸出cabinets必須恰好一筆。不得建立相鄰桶、不得把整排合成一桶，也不得用側邊垂直高度鏈改寫桶寬。\n\n前置方向與分桶硬鎖：${JSON.stringify(segmentationLockSummary(oneCabinetPlan))}\n\n本桶裁切規劃：${JSON.stringify(cabinetCropSummary(oneCabinetPlan))}\n\n本桶實際像素裁切與邊界提示：${JSON.stringify(cabinetCropEvidenceHints(segmentCropInputs))}\n\n已鎖正方向的尺寸證據表：${JSON.stringify(dimensionLedger)}\n\n先完整盤點componentRegions，再逐片數活動層板；看得見實體水平層板而沒有F中心線、固格或固定層板的肯定標記時，依R24直接列活格，不再詢問固格／活格。<／>斜向門片標記只是覆蓋標記，不得遮掉或取消其後仍清楚可見的水平層板。若有全高中立，逐格數每一道水平板；同高板線在中立兩側都存在時固定算左右各1片，不能只計一側，也不能跨過中立。門片符號與片數由最後的獨立掃描鎖回，本階段只能補門尺寸與把手；2.4／24mm只提示有斜把，不判尺寸關係也不扣門高。純數字「門N」是普通4E門名義門寬，完成門寬固定N-2，含字母「門A12」才是門型／門號。`,
         schemaName: `cabinet_structure_${segment.cabinetId.toLowerCase()}`,
         schema: cabinetReadSchema,
         effort: "low",
@@ -685,7 +685,7 @@ export async function runRevisionPipeline(
   }
   dimensionLedger = normalizeLedgerToSegmentationLocks(dimensionLedger as Record<string, unknown>, segmentation);
 
-  const correctionTask = `使用者正在修正系統櫃讀圖。只使用逐桶裁切圖，一桶一桶重查componentRegions與內部項目。使用者最新回答優先於AI推論；已確認不存在者完全不列。固定SOP數量、抽牆高度級距及鉸鍊正式級距由後端計算，不得詢問。第一階段門片type、count、countBasis、doorSymbols、direction不可新增、刪除或覆蓋；門寬、門高、24mm脈絡及把手則是另一條資料線，必須依圖或使用者回答補正，且不得因此清除<／>。已判定的24mm脈絡固定只套一次，除非使用者本次明確更正24mm、2.4、斜把或門縫，否則不得改寫或重新詢問。若要更改門片數或開向，必須重新上傳掃描取得新的像素複核。每個抽屜組補完成屜頭高度、實際格寬與位置；抽牆高由後端依屜頭高≤200用100、>200用180；中立只做到實際分隔區；擋板先判鎖附位置。前置方向、桶數、桶號、左右順序與底部水平桶寬是硬鎖，任何修正都不得覆蓋。\n\n前置方向與分桶硬鎖：${JSON.stringify(segmentationLockSummary(segmentation))}\n\n逐桶分段：${JSON.stringify(cabinetCropSummary(segmentation))}\n\n尺寸證據表：${JSON.stringify(dimensionLedger)}\n\n門板符號鎖：${JSON.stringify(doorAudit)}\n\n目前結構：${JSON.stringify(current)}\n\n近期對話：${historyText}\n\n使用者最新回答：${reply}`;
+  const correctionTask = `使用者正在修正系統櫃讀圖。只使用逐桶裁切圖，一桶一桶重查componentRegions與內部項目。使用者最新回答優先於AI推論；已確認不存在者完全不列。固定SOP數量、抽牆高度級距及鉸鍊正式級距由後端計算，不得詢問。第一階段門片type、count、countBasis、doorSymbols、direction不可新增、刪除或覆蓋；門寬、門高及把手則是另一條資料線，必須依圖或使用者回答補正，且不得因此清除<／>。2.4／24mm只作有斜把的肯定提示，不必確認它的尺寸關係，也不從門高扣除；若沒有2.4，再看門面或屜頭是否有斜把空隙。若要更改門片數或開向，必須重新上傳掃描取得新的像素複核。每個抽屜組補完成屜頭高度、實際格寬與位置；抽牆高由後端依屜頭高≤200用100、>200用180；中立只做到實際分隔區；擋板先判鎖附位置。前置方向、桶數、桶號、左右順序與底部水平桶寬是硬鎖，任何修正都不得覆蓋。\n\n前置方向與分桶硬鎖：${JSON.stringify(segmentationLockSummary(segmentation))}\n\n逐桶分段：${JSON.stringify(cabinetCropSummary(segmentation))}\n\n尺寸證據表：${JSON.stringify(dimensionLedger)}\n\n門板符號鎖：${JSON.stringify(doorAudit)}\n\n目前結構：${JSON.stringify(current)}\n\n近期對話：${historyText}\n\n使用者最新回答：${reply}`;
   const revisionRun = await callWithRetry(key, cropImages, {
     instructions: STRUCTURE_INSTRUCTIONS,
     taskText: correctionTask,

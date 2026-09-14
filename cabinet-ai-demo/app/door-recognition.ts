@@ -52,6 +52,22 @@ export function normalizeDoorGap24Fields(originalDoor: JsonRecord): JsonRecord {
   let context = String(door.slantedGap24Context || "unknown") as DoorGap24Context;
   if (!RESOLVED_GAP24_CONTEXTS.has(context)) context = "unknown";
 
+  // The latest workshop rule treats a visible 24 mm / 2.4 cm mark only as a
+  // positive slanted-handle hint.  It is not a door-height deduction and its
+  // relationship to a height chain never has to be closed.  Keep the legacy
+  // fields as evidence tags for old saved reads, but promote their positive
+  // signal into the actual per-door handle fields.
+  const hasSlantedHandleHint = door.includesSlantedGap24 === true
+    || POSITIVE_GAP24_CONTEXTS.has(context as DoorGap24Lock["context"]);
+  const count = positiveInteger(door.count);
+  if (hasSlantedHandleHint && door.type === "4E" && count > 0) {
+    door.slantedHandle = true;
+    if (positiveInteger(door.slantedHandleCount) === 0) door.slantedHandleCount = count;
+    if (!["top", "bottom", "long"].includes(String(door.slantedHandleStyle || "unknown"))) {
+      door.slantedHandleStyle = "unknown";
+    }
+  }
+
   // A positive includes flag already means the reader judged that the opening
   // height contains the 24 mm gap. Close that decision instead of asking the
   // same question again in later passes.
@@ -195,27 +211,23 @@ export function doorDimensionEvidenceIsClosed(door: DoorLike) {
 }
 
 export function doorIsReadyForHardware(door: DoorLike) {
-  const normalized = normalizeDoorGap24Fields(door as JsonRecord);
-  const gapContext = String(normalized.slantedGap24Context || "unknown");
-  const includesGap = Boolean(normalized.includesSlantedGap24);
-  const gapClosed = gapContext !== "unknown" && includesGap === (gapContext === "door_chain_included");
-  const count = positiveInteger(door.count);
-  const jHandleCount = positiveInteger(door.jHandleCount);
-  const slantedHandleCount = positiveInteger(door.slantedHandleCount);
-  const slantedStyle = String(door.slantedHandleStyle || "unknown");
+  const normalized = normalizeDoorGap24Fields(door as JsonRecord) as DoorLike;
+  const count = positiveInteger(normalized.count);
+  const jHandleCount = positiveInteger(normalized.jHandleCount);
+  const slantedHandleCount = positiveInteger(normalized.slantedHandleCount);
+  const slantedStyle = String(normalized.slantedHandleStyle || "unknown");
   const handlesClosed = jHandleCount <= count
     && slantedHandleCount <= count
     && jHandleCount + slantedHandleCount <= count
-    && Boolean(door.slantedHandle) === (slantedHandleCount > 0)
+    && Boolean(normalized.slantedHandle) === (slantedHandleCount > 0)
     && (slantedHandleCount === 0 || ["top", "bottom", "long"].includes(slantedStyle));
-  return doorCountEvidenceIsClosed(door) && doorDimensionEvidenceIsClosed(door) && gapClosed && handlesClosed;
+  return doorCountEvidenceIsClosed(normalized) && doorDimensionEvidenceIsClosed(normalized) && handlesClosed;
 }
 
 function finishedDoorHeight(door: JsonRecord) {
   if (door.dimensionBasis === "finished") return positiveInteger(door.finishedHeightMm);
   if (door.dimensionBasis !== "opening") return 0;
-  const gap = door.includesSlantedGap24 && door.slantedGap24Context === "door_chain_included" ? 24 : 0;
-  return positiveInteger(Number(door.openingHeightMm) - (door.includesBottom30 ? 30 : 0) - gap - 4);
+  return positiveInteger(Number(door.openingHeightMm) - (door.includesBottom30 ? 30 : 0) - 4);
 }
 
 function applyHingeSchedule(door: JsonRecord) {

@@ -110,8 +110,8 @@ const DOOR_INSTRUCTIONS = `你是系統櫃最後門面讀圖員。你要一起�
 硬規則：
 1. 一個門面內清楚的「<」代表一片左開門，「>」代表一片右開門。符號可能是跨越大部分門面的兩段大型虛線／點線人字幾何，不一定是印刷文字：兩條斜線的共同尖端在左才是「<」，共同尖端在右才是「>」。高對比圖與斜向遮罩只能協助定位；必須回到同輪提供的第一輪原始門面／桶內裁切再次看見，symbolRegions.cropName固定引用原始裁切，不得引用p2／p3輔助圖。必須逐個定位實際cropName、座標與區域；不得用門框數、常見配置、單一斜線或裁切邊界猜片數。
 2. doorSymbols依左到右、上到下排列，count必須等於doorSymbols長度，countBasis必須是symbols。若尺寸相同且加工相同可合成一組；尺寸或加工不同必須分組。
-3. dimensionBasis=finished只限圖面直接標單片完成門面；dimensionBasis=opening時openingWidthMm/openingHeightMm填整組開口，後端才會扣單門縫與門高4mm。看不清就unknown且尺寸填0，不得猜。
-4. 24mm／2.4cm斜把縫只可依尺寸鏈判一次：開口高度仍包含它用door_chain_included；圖上已分開標或門高已扣用already_separate；疊櫃上抬用stacked_lift；沒有斜把用none。
+3. dimensionBasis=finished只限圖面直接標單片完成門面；dimensionBasis=opening時openingWidthMm/openingHeightMm填整組開口，後端只扣單門縫與門高4mm（以及圖上另有的底部30mm）。看不清就unknown且尺寸填0，不得猜；2.4／24mm不參與門高扣除。
+4. 24mm／2.4cm只是一個「此處有斜把」的肯定提示，不必判它包含在哪一段、是否已另列或是否為疊櫃抬高。只要在對應門板或屜頭附近看見2.4，就把該面判為斜把，再依空隙位置判top／bottom／long；沒看見2.4也不代表普通面，仍要看是否有一條斜把空隙或加工圖形。只有確定沒有斜把空隙／加工才填plain或none。相容欄位固定填includesSlantedGap24=false、slantedGap24Context=none，禁止提出24mm關係問題。
 5. slantedHandleStyle精確分top（上斜把）、bottom（下斜把）、long（長斜把）、none或unknown；slantedHandleCount只算實際加工門片。門邊孤立的彩色小三角只能作斜把加工證據，絕不可當成左／右開向。J把只依小方形把手記號計數。
 6. hingeCountPerDoor固定填0，由後端依完成門高算；普通門油壓器由後端每片1個。
 7. 桶身資料中的退縮、擋板與drawerGroups.slantedHandle已刻意清零；不可把清零誤判為沒有門面加工。每個drawerGroups項目代表一組一定存在的屜頭，drawerHandles必須逐組恰好輸出一筆；普通屜頭填plain＋none，斜把屜頭填slanted及top／bottom／long。門與屜頭必須分開看圖，任何一方的斜把都不可套到另一方。
@@ -148,7 +148,7 @@ async function scanCabinetDoors(key: string, segment: SegmentationPlan["cabinets
     try {
       const run = await callStructuredAI(key, selected.map(({ name, dataUrl }) => ({ name, dataUrl })), {
         instructions: DOOR_INSTRUCTIONS,
-        taskText: `只輸出cabinetId=${segment.cabinetId}。鎖定桶寬=${segment.bottomSegmentMm}mm；桶身資料只供門面開口關聯，不是答案：${JSON.stringify({ id: cabinet.id, widthMm: cabinet.widthMm, heightMm: cabinet.heightMm, depthMm: cabinet.depthMm, drawerGroups: cabinet.drawerGroups, middleDividers: cabinet.middleDividers, drawingNotes: cabinet.drawingNotes })}。其中退縮、擋板及屜頭斜把為0／空是前階段刻意建立的未加工基準，必須在本輪依原圖重新判讀。每組drawerGroups都有屜頭，drawerHandles不得漏組；門與屜頭斜把分開判。若有中立，擋板逐實體開口分段輸出。本輪裁切：${JSON.stringify(selected.map(({ name, role, region, focus, scanPass }) => ({ name, role, region, focus: focus || "全桶", scanPass: scanPass || 1 })))}。${firstSymbolLock ? `前輪不可覆蓋的符號鎖：${JSON.stringify(lockableDoorRead(firstSymbolLock).doors)}；本輪只能保留並補齊尺寸／加工或新增其他清楚符號。` : ""}`,
+        taskText: `只輸出cabinetId=${segment.cabinetId}。鎖定桶寬=${segment.bottomSegmentMm}mm；桶身資料只供門面開口關聯，不是答案：${JSON.stringify({ id: cabinet.id, widthMm: cabinet.widthMm, heightMm: cabinet.heightMm, depthMm: cabinet.depthMm, drawerGroups: cabinet.drawerGroups, middleDividers: cabinet.middleDividers, drawingNotes: cabinet.drawingNotes })}。其中退縮、擋板及屜頭斜把為0／空是前階段刻意建立的未加工基準，必須在本輪依原圖重新判讀。每組drawerGroups都有屜頭，drawerHandles不得漏組；門與屜頭斜把分開判。2.4／24mm出現就確認對應面有斜把，沒有則繼續看斜把空隙；它不參與門高扣除也不需要關係判定。若有中立，擋板逐實體開口分段輸出。本輪裁切：${JSON.stringify(selected.map(({ name, role, region, focus, scanPass }) => ({ name, role, region, focus: focus || "全桶", scanPass: scanPass || 1 })))}。${firstSymbolLock ? `前輪不可覆蓋的符號鎖：${JSON.stringify(lockableDoorRead(firstSymbolLock).doors)}；本輪只能保留並補齊尺寸／加工或新增其他清楚符號。` : ""}`,
         schemaName: `complete_door_${attemptNo}`,
         schema: DOOR_SCHEMA,
         effort: "low",
@@ -227,7 +227,7 @@ export async function POST(req: Request) {
       const resolved = lockableDoorRead(read);
       if (resolved.status === "omitted") return [`${String(read.cabinetId || "未知桶身")}：門片有無或開向尚未閉合`];
       if (resolved.status === "confirmed_4e" && resolved.doors.some((door) => !doorIsReadyForHardware(door as JsonRecord))) {
-        return [`${String(read.cabinetId || "未知桶身")}：門片尺寸、斜把樣式或24mm關係尚未閉合`];
+        return [`${String(read.cabinetId || "未知桶身")}：門片尺寸或斜把加工樣式尚未閉合`];
       }
       return [];
     });

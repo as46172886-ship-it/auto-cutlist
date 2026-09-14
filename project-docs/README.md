@@ -23,9 +23,9 @@
 
 ## 保存狀態
 
-- 現行 Sites 原始碼提交：`11c1f3aa0e05b3f1db8795675d7d1e899970ce45`，已部署為 v81；歷史移轉基準仍保留在 `SOURCE_VERSION.txt`。
+- 現行 Sites 原始碼提交：`070be29e1dc2bc7564076a6727f212aa4dcbc133`，已部署為 v82；歷史移轉基準仍保留在 `SOURCE_VERSION.txt`。
 - `app/face-machining.ts` 已接入 `/api/non-door` 與 `/api/doors`，並由現行測試覆蓋；未完成項目改以 [STATUS.md](STATUS.md) 為準。
-- GitHub 私人庫 `as46172886-ship-it/auto-cutlist` 保存程式、測試、規則文件與可取得附件；本次 v81 快照同步完成後以倉庫最新 HEAD 為準。
+- GitHub 私人庫 `as46172886-ship-it/auto-cutlist` 保存程式、測試、規則文件與可取得附件；本次 v82 快照同步完成後以倉庫最新 HEAD 為準。
 - GitHub 是移轉與稽核用封存；Sites 仍是網站原始碼與部署來源。同步 GitHub 不取代 Sites，也不變更 owner-only 存取權。
 - 本輪已完成離線測試與正式站部署，但未執行付費原圖正式掃描；正式 AI 90% 仍待依 [VALIDATION.md](VALIDATION.md) 驗收及複驗。
 

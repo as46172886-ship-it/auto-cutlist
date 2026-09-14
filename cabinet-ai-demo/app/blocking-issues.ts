@@ -9,7 +9,7 @@ export function blockingIssueClass(issue: string) {
   if (/4E門.*(?:開口尺寸|完成門面尺寸)|門高.*門寬|門板標記與完成尺寸|門型／門號.*完成門/.test(issue)) return "door-size";
   if (/4E門片數|門片(?:數量|片數)|左右開向|開向符號|片數依據|已鎖定結果|無法偵測門板|門板掃描|未定位<／>|不列.*門片|門片.{0,24}無法.{0,24}(?:確認|辨識)|無法.{0,24}(?:確認|辨識).{0,24}門片/.test(issue)) return "door-count";
   if (/門片與手把|J把.*斜把|手把數量/.test(issue)) return "door-handles";
-  if (/24mm斜把縫|24mm扣|slantedGap24/.test(issue)) return "door-gap-24";
+  if (/24mm(?:斜把縫|扣|關係)|slantedGap24/.test(issue)) return "door-gap-24";
   if (/深度群組|缺少.{0,12}深度|深度.{0,12}(?:未知|未確認|未標)/.test(issue)) return "depth";
   if (/缺少.{0,8}(?:桶身)?寬度|缺少寬度/.test(issue)) return "width";
   if (/缺少.{0,8}(?:桶身)?(?:外側總)?高|缺少外側總高/.test(issue)) return "height";
@@ -113,7 +113,8 @@ function doorIssueScopes(issues: string[]) {
 }
 
 export function mergeDoorAdvisoryIssues(issues: string[]) {
-  const doorIssues = issues.map((issue) => String(issue || "").trim()).filter((issue) => issue && isDoorAdvisoryIssue(issue));
+  const doorIssues = issues.map((issue) => String(issue || "").trim())
+    .filter((issue) => issue && isDoorAdvisoryIssue(issue) && blockingIssueClass(issue) !== "door-gap-24");
   if (!doorIssues.length) return [];
   const scopes = doorIssueScopes(doorIssues);
   const scopeText = scopes.length ? `${scopes.join("、")} ` : "";
@@ -124,7 +125,6 @@ export function mergeDoorAdvisoryIssues(issues: string[]) {
     "door-count": "片數／開向",
     "door-size": "開口尺寸／完成門面尺寸",
     "door-handles": "手把數量",
-    "door-gap-24": "24mm斜把縫關係",
     "hinge-schedule": "鉸鍊門高",
   };
   const detailLabels = [...new Set(doorIssues.map((issue) => labelsByClass[blockingIssueClass(issue)]).filter(Boolean))];
