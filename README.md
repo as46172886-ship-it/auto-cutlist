@@ -7,8 +7,9 @@
 1. [START_HERE.md](START_HERE.md)
 2. [AGENTS.md](AGENTS.md)
 3. [HANDOFF.md](HANDOFF.md)
-4. [CURRENT_VERSION.txt](CURRENT_VERSION.txt)
-5. [project-docs/README.md](project-docs/README.md)
+4. [VERSION_HISTORY.md](VERSION_HISTORY.md)
+5. [CURRENT_VERSION.txt](CURRENT_VERSION.txt)
+6. [project-docs/README.md](project-docs/README.md)
 
 分類文件：
 
@@ -17,6 +18,7 @@
 - [使用工具](project-docs/TOOLS.md)
 - [狀態、衝突與未完成事項](project-docs/STATUS.md)
 - [測試與正式驗收](project-docs/VALIDATION.md)
+- [Sites v1～v82完整版本紀錄與新版本追加規範](VERSION_HISTORY.md)
 - [2026-09-13完整盤點](project-docs/AUDIT-2026-09-13.md)
 - [程式規則完整快照](project-docs/SOURCE-RULES.md)
 - [來源檔案雜湊清冊](project-docs/FILES.json)

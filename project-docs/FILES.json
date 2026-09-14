@@ -1,6 +1,6 @@
 {
   "date": "2026-09-14",
-  "scope": "Current private GitHub archive inventory after Sites v82 sync; excludes Git metadata, dependencies, build output, credentials, cookies and local auth",
+  "scope": "Current private GitHub archive inventory after Sites v82 sync and version-ledger creation; excludes Git metadata, dependencies, build output, credentials, cookies and local auth",
   "sourceCommit": "070be29e1dc2bc7564076a6727f212aa4dcbc133",
   "sitesVersion": 82,
   "targetRepository": "as46172886-ship-it/auto-cutlist",
@@ -12,9 +12,21 @@
       "status": "current-snapshot"
     },
     {
+      "path": "估價原稿含料單(1).xls",
+      "bytes": 362496,
+      "sha256": "429262b7687b8885f488b5829d91216a959ecc080104b24444ebd2d4b3a43bda",
+      "status": "current-snapshot"
+    },
+    {
+      "path": "佛斯特_修正拆料表(1).xlsx",
+      "bytes": 10778,
+      "sha256": "346591c74ecc5d2143586b33e0e0f96baafbc7f67a0ce99d50721fad510158ce",
+      "status": "current-snapshot"
+    },
+    {
       "path": "AGENTS.md",
-      "bytes": 2611,
-      "sha256": "a7fe5fcc3791f7498b24236792805d94ebfe959dfa8a11aed93d2cb313c66ad2",
+      "bytes": 2899,
+      "sha256": "d21f40fe4851edf4aa456b897877bfba6f461a97457acd3c5c7a1d9a8b978392",
       "status": "current-snapshot"
     },
     {
@@ -853,8 +865,8 @@
     },
     {
       "path": "HANDOFF.md",
-      "bytes": 5505,
-      "sha256": "9ac825f7fa41586adc9606df732b5c142542f59c97aa2f93352a74f6957ab35f",
+      "bytes": 5935,
+      "sha256": "d10b652dfd6ae8cef9e58995e8876623448b4adc86a3f1486a0ead07a4de85a8",
       "status": "current-snapshot"
     },
     {
@@ -1962,15 +1974,15 @@
       "status": "current-snapshot"
     },
     {
-      "path": "offline-evidence/layout-pdf/current-foster-output.pdf",
-      "bytes": 158502,
-      "sha256": "4ed2438b36c140713bc75083e3ce07fe2b7bc44d4d901633af5aa82e57ff8e19",
-      "status": "current-snapshot"
-    },
-    {
       "path": "offline-evidence/layout-pdf/估價原稿含料單(1).pdf",
       "bytes": 2375182,
       "sha256": "97782f0e7ab45be41fe6a41a33e114c757cb971a2f823c64d7b2562798eda751",
+      "status": "current-snapshot"
+    },
+    {
+      "path": "offline-evidence/layout-pdf/current-foster-output.pdf",
+      "bytes": 158502,
+      "sha256": "4ed2438b36c140713bc75083e3ce07fe2b7bc44d4d901633af5aa82e57ff8e19",
       "status": "current-snapshot"
     },
     {
@@ -2143,8 +2155,8 @@
     },
     {
       "path": "project-docs/README.md",
-      "bytes": 3029,
-      "sha256": "8d2bc7c736ee37c8c007e15c0b3e09a424928ddf220e6ff004200076b2368376",
+      "bytes": 3255,
+      "sha256": "661f9fa573a920c96a4b9bcc13d846ec92ab41bf3b0378c2fed038a51f0104a7",
       "status": "current-snapshot"
     },
     {
@@ -2161,8 +2173,8 @@
     },
     {
       "path": "project-docs/STATUS.md",
-      "bytes": 2961,
-      "sha256": "bccf160e7c6e5c27ef8164e626f30e603ffcec677058900612cec509606e6d72",
+      "bytes": 3169,
+      "sha256": "c7d7c583a8f96301a82d8d15e254bced16b81428ea22918ea7fc77b2143fb30f",
       "status": "current-snapshot"
     },
     {
@@ -2179,20 +2191,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 1386,
-      "sha256": "1243c26d6dbef84924c03739ae072fa28ebdfc8fd62fa2a0bc16ab1b2d994c5b",
-      "status": "current-snapshot"
-    },
-    {
-      "path": "references/auto_cutlist_research_blueprint_2026-08-24.md",
-      "bytes": 27451,
-      "sha256": "744129def79d7a43857e63aee5938a149844fd423ba90ca99665090ac57f62aa",
-      "status": "current-snapshot"
-    },
-    {
-      "path": "references/系統櫃/佛斯特_修正拆料表.xlsx",
-      "bytes": 10778,
-      "sha256": "346591c74ecc5d2143586b33e0e0f96baafbc7f67a0ce99d50721fad510158ce",
+      "bytes": 1511,
+      "sha256": "94cf41477999145c47fa4d3328665420aa9be0f2b0e4ee48cc65a39864dafaa3",
       "status": "current-snapshot"
     },
     {
@@ -2220,9 +2220,9 @@
       "status": "current-snapshot"
     },
     {
-      "path": "references/設計師估價原稿含料單(2)_衣櫃試拆_Sheet1填入版.xlsx",
-      "bytes": 108167,
-      "sha256": "0b79e2eb88603dae9a4a00a4805af2ed352b7294b0248fedc90347e1cbf325a9",
+      "path": "references/系統櫃/佛斯特_修正拆料表.xlsx",
+      "bytes": 10778,
+      "sha256": "346591c74ecc5d2143586b33e0e0f96baafbc7f67a0ce99d50721fad510158ce",
       "status": "current-snapshot"
     },
     {
@@ -2238,6 +2238,18 @@
       "status": "current-snapshot"
     },
     {
+      "path": "references/設計師估價原稿含料單(2)_衣櫃試拆_Sheet1填入版.xlsx",
+      "bytes": 108167,
+      "sha256": "0b79e2eb88603dae9a4a00a4805af2ed352b7294b0248fedc90347e1cbf325a9",
+      "status": "current-snapshot"
+    },
+    {
+      "path": "references/auto_cutlist_research_blueprint_2026-08-24.md",
+      "bytes": 27451,
+      "sha256": "744129def79d7a43857e63aee5938a149844fd423ba90ca99665090ac57f62aa",
+      "status": "current-snapshot"
+    },
+    {
       "path": "SOURCE_VERSION.txt",
       "bytes": 107,
       "sha256": "de81145d566488a5169bc5b74dac62423a70b59707624f1c5f379b6720af29ad",
@@ -2245,20 +2257,14 @@
     },
     {
       "path": "START_HERE.md",
-      "bytes": 2465,
-      "sha256": "5c80d6de4334a77447753b873fef13929665c14edb86bcb28aa69ef47493bae3",
+      "bytes": 2714,
+      "sha256": "405f80a117829fa3d5baf0473c361e56f72baa0f96cf6e82726427c755df3fd3",
       "status": "current-snapshot"
     },
     {
-      "path": "估價原稿含料單(1).xls",
-      "bytes": 362496,
-      "sha256": "429262b7687b8885f488b5829d91216a959ecc080104b24444ebd2d4b3a43bda",
-      "status": "current-snapshot"
-    },
-    {
-      "path": "佛斯特_修正拆料表(1).xlsx",
-      "bytes": 10778,
-      "sha256": "346591c74ecc5d2143586b33e0e0f96baafbc7f67a0ce99d50721fad510158ce",
+      "path": "VERSION_HISTORY.md",
+      "bytes": 11731,
+      "sha256": "418b3c0624b65481f88e195d853c0e15a8e46bbc0635c3db45af467d4e091c9c",
       "status": "current-snapshot"
     }
   ]

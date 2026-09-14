@@ -9,6 +9,7 @@
 - Windows 等價 Vinext 正式建置成功，完整 Node 測試 256/256 通過，部署封裝通過 Worker entrypoint 與 hosting manifest 驗證。
 - 佛斯特雙立面結構化 fixture 仍為 61/61。這只驗證確定性公式與 Excel 輸出，不是 AI 看原圖的正式辨識 F1；90% 目標尚未驗收。
 - 正式站沒有 D1 或 R2 binding，`db/schema.ts` 仍為空，也沒有正式 migration。本次所稱規則資料庫是 Git 版本控制中的 TypeScript 規則，不是雲端案件資料庫。
+- 根目錄 `VERSION_HISTORY.md` 已依 Sites 實際清單建檔，含 v1～v82、部署狀態、來源提交及 v82 詳細防退步註記；往後每次建立／部署版本前必須先追加，不得覆寫舊紀錄。
 
 ## 本次完成
 
@@ -46,10 +47,11 @@
 
 ## 接手原則
 
-1. 先讀 `START_HERE.md`、`AGENTS.md`、本檔、`project-docs/RULES.md`、`project-docs/FORMULAS.md` 與 `cabinet-ai-demo/docs/research-log.md`。
+1. 先讀 `START_HERE.md`、`AGENTS.md`、本檔、`VERSION_HISTORY.md`、`project-docs/RULES.md`、`project-docs/FORMULAS.md` 與 `cabinet-ai-demo/docs/research-log.md`。
 2. 以目前程式、測試與最新使用者明確要求為準；歷史 SOP 與研究材料只作來源，不可覆蓋新規則。
 3. 任何公式或辨識修改先跑離線測試；名稱含 `live` 的腳本可能呼叫付費 AI，不得當一般測試執行。
 4. 沿用同一 Sites project_id、owner-only 權限與秘密；不擷取或搬移明文金鑰。
 5. 未取得正式原圖收據、網站版本、輸出 Excel 與 exact-match 報告前，不得用離線 61/61 宣布 AI 90%。
+6. 每次新版本先在 `VERSION_HISTORY.md` 寫清楚規則、修改、防退步、驗證與未解決事項；發布後補齊來源 SHA、Sites 版本／部署識別並同步 GitHub。
 
 原移轉來源 SHA `c82259de56af62a72e55ff2b920abfe456dba648` 保留在 `SOURCE_VERSION.txt` 作歷史基準；目前正式版本見 `CURRENT_VERSION.txt`。

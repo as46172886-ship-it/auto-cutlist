@@ -11,6 +11,7 @@
 | [TOOLS.md](TOOLS.md) | 實際使用的程式工具、版本與用途 |
 | [STATUS.md](STATUS.md) | 未完成事項、規則衝突、驗收狀態 |
 | [VALIDATION.md](VALIDATION.md) | 離線測試與正式 AI 驗收分開管理 |
+| [../VERSION_HISTORY.md](../VERSION_HISTORY.md) | Sites v1～v82完整索引、最新修改註記與往後版本追加規範 |
 | [AUDIT-2026-09-13.md](AUDIT-2026-09-13.md) | 本次完整檔案、程式、測試與附件盤點 |
 | [SOURCE-RULES.md](SOURCE-RULES.md) | 程式內 67 條 SOP、30 條數量規則、15 條基礎桶身規則的完整快照 |
 | [FILES.json](FILES.json) | 建檔時來源檔案的大小與 SHA-256 清冊 |
@@ -35,4 +36,4 @@
 
 上傳前依 FILES.json 逐檔檢查並掃描秘密；不得直接遞迴上傳整個工作區。排除 `.git/`、`node_modules/`、`dist/`、`.env*`、`.dev.vars*`、`.wrangler/`、`.sites-runtime/`、cookies、授權快取、帶憑證的日誌與臨時建置包。原圖、正解與客戶資料只能進入確認適合的私人儲存庫。清冊是候選保存範圍，不是已通過機密審核的證明。
 
-往後每次規則調整需同時更新 RULES、FORMULAS、測試與 STATUS；歷史資料不覆蓋、不刪除。每次上線另記提交 SHA、Sites 版本與驗收依據。
+往後每次規則調整需同時更新 RULES、FORMULAS、測試與 STATUS；歷史資料不覆蓋、不刪除。每次建立／部署版本前先追加 [VERSION_HISTORY.md](../VERSION_HISTORY.md)，上線後補齊提交 SHA、Sites 版本、部署狀態與驗收依據。
