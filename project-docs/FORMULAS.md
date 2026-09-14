@@ -1,6 +1,6 @@
 # 公式總表
 
-2026-09-14 依 Sites v80 程式整理，非新核准 SOP。來源以 `../cabinet-ai-demo/app/sop.ts`、`face-machining.ts`、`drawer-rules.ts`、`hinge-rules.ts`、`quantity-rules.ts` 為主；差異見 [STATUS](STATUS.md)。
+2026-09-14 依 Sites v81 程式整理，非新核准 SOP。來源以 `../cabinet-ai-demo/app/sop.ts`、`face-machining.ts`、`drawer-rules.ts`、`hinge-rules.ts`、`quantity-rules.ts` 為主；差異見 [STATUS](STATUS.md)。
 
 ## 符號與條件
 
@@ -17,7 +17,7 @@ W＝單桶外寬；H＝桶身外高（不含另段腳高／留空）；D＝桶�
 | 已確認退縮頂／底 | (D−19)×(W−36) | 僅門面最後掃描明確指定的實際頂板或底板；晚階段回算已接入 |
 | 背板 | (W−26)×(H−26)；1片 | 厚8 |
 | 固格 | (D−29)×(W−36) | 規則本輪不動 |
-| 舊資料斜把固格欄位 | (D−48)×(W−36) | 計算器仍可讀舊結構值，但 v80 自動流程固定 `slantedFixedShelfCount=0`，不由門面影像產生；待另行確認 |
+| 舊資料斜把固格欄位 | (D−48)×(W−36) | 計算器仍可讀舊結構值，但 v81 自動流程固定 `slantedFixedShelfCount=0`，不由門面影像產生；待另行確認 |
 | 活格 | (D−40)×(W−37) | D−44 停用 |
 | 全高中立分隔活格 | 深D−40；寬=floor((W−36−18m)/(m+1))−1 | m為全高中立片數；程式使用等分，非等寬圖面須另核 |
 | 中立 | 深D−29；高=實際跨度−上接點扣數−下接點扣數 | 完整板扣18；固格中心線扣9；明示完成尺寸則直接用，不硬套H−36 |

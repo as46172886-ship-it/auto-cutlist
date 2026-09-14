@@ -100,6 +100,31 @@ export const cabinetSegmentationSchema = {
   },
 };
 
+export const internalCropRepairSchema = {
+  type: "object",
+  additionalProperties: false,
+  required: ["repairs", "unresolved"],
+  properties: {
+    repairs: {
+      type: "array",
+      items: {
+        type: "object",
+        additionalProperties: false,
+        required: ["cabinetId", "sourceImageName", "rotationToUprightDeg", "box", "region", "evidence"],
+        properties: {
+          cabinetId: { type: "string" },
+          sourceImageName: { type: "string" },
+          rotationToUprightDeg: { type: "integer", enum: [0, 90, 180, 270] },
+          box: normalizedCropBoxSchema,
+          region: { type: "string" },
+          evidence: { type: "string" },
+        },
+      },
+    },
+    unresolved: { type: "array", items: { type: "string" } },
+  },
+};
+
 const dimensionMarkSchema = {
   type: "object",
   additionalProperties: false,

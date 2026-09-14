@@ -4,14 +4,15 @@
 
 | 項目 | 現況／下一步 |
 | --- | --- |
-| GitHub 建檔 | 私人倉庫 `as46172886-ship-it/auto-cutlist` 已建立；v80程式與本輪文件納入目前main快照，封存提交以倉庫最新HEAD為準 |
-| 現行來源 | 正式站來源 HEAD `28b2105425fc3ca7cd0d767d2362fa261cd55b55` |
+| GitHub 建檔 | 私人倉庫 `as46172886-ship-it/auto-cutlist` 已建立；v81程式與本輪文件納入目前main快照，封存提交以倉庫最新HEAD為準 |
+| 現行來源 | 正式站來源 HEAD `11c1f3aa0e05b3f1db8795675d7d1e899970ce45` |
+| 桶內裁切閉合 | 同圖桶內＋門面可建立重疊角色裁切；缺少桶內裁切時只對缺桶做一次聚焦修復，純門面仍安全阻擋；局部 `Cxx` 桶號只在單立面且寬度相符時對應全域桶號 |
 | 門＋屜頭後回算 | 已接入 `/api/non-door` 與 `/api/doors`，含獨立斜把判定、退縮、實體擋板分段及屜頭完整性阻擋 |
-| 正式站版本 | Sites v80 已成功部署到原網址，owner-only 權限未變 |
+| 正式站版本 | Sites v81 已成功部署到原網址，owner-only 權限未變 |
 | 規則資料 | `app/sop-rules.ts`、`app/quantity-rules.ts`、`app/domain/carcass/knowledge.ts` 等 Git 版控檔案已更新 |
 | 雲端資料庫 | D1、R2 都未啟用，`db/schema.ts` 與 migration 為空；目前沒有案件保存資料庫，因此本輪無 schema migration |
-| 離線驗證 | Vinext build 成功；Node 測試 246/246；佛斯特結構化 fixture 61/61 |
-| 正式 AI 90% | 尚未驗收與複驗；不能以 246 項測試或 61/61 fixture 代替 |
+| 離線驗證 | Vinext build 成功；Node 測試 255/255；佛斯特結構化 fixture 61/61 |
+| 正式 AI 90% | 尚未驗收與複驗；不能以 255 項測試或 61/61 fixture 代替 |
 | 固格 | 最新要求本輪不動；自動門面流程固定不改固格尺寸，維持 D-29 |
 | 抽屜 | 維持 99／90／81；已新增每抽必有一片屜頭的硬性閉合 |
 | 填縫 | 使用者未確認；R34 與程式仍有 100mm 舊預設，列明差異待處理 |

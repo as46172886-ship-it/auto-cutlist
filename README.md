@@ -25,4 +25,4 @@
 
 正式網站仍沿用原Sites專案與owner-only權限；此GitHub保存庫只作版本歸檔，不取代網站或改變其權限。
 
-目前正式網站為 Sites v80，來源提交與部署識別記錄在 `CURRENT_VERSION.txt`；D1與R2均未啟用。
+目前正式網站為 Sites v81，來源提交與部署識別記錄在 `CURRENT_VERSION.txt`；D1與R2均未啟用。

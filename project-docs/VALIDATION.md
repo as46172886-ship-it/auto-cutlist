@@ -2,16 +2,16 @@
 
 ## 2026-09-14 已執行
 
-- `node --test tests/*.test.mjs`：246/246 通過，包含桶身基準清除、門／屜頭獨立斜把、實體擋板分段、每抽一片屜頭及尺寸線幾何回歸。
+- `node --test tests/*.test.mjs`：255/255 通過，包含桶身基準清除、門／屜頭獨立斜把、實體擋板分段、每抽一片屜頭、尺寸線幾何、同圖桶內角色閉合及桶身局部／全域 ID 對應回歸。
 - `npx vinext build`：成功；首頁與 7 個 API routes 完成 production build。
 - 建置產物驗證：`dist/server/index.js` 有 Worker `default.fetch`；`dist/.openai/hosting.json` 可解析並與原 project_id 一致。
 - 佛斯特結構化雙立面 fixture：61/61；門板與門五金仍由 exact-match 回歸涵蓋。
-- 原始碼提交 `28b2105425fc3ca7cd0d767d2362fa261cd55b55` 已推送、封裝、儲存為 Sites v80 並成功部署。
+- 原始碼提交 `11c1f3aa0e05b3f1db8795675d7d1e899970ce45` 已推送、封裝、儲存為 Sites v81 並成功部署。
 - `npx tsc --noEmit` 尚有 6 個既存型別錯誤；這不影響本次 Vinext production build，但不得把型別檢查描述為全綠。
 
 ## 離線與正式分開
 
-- 246 項測試與佛斯特 61/61 代表給定結構資料後的規則、公式及 Excel 回歸，不代表 AI 看原圖達 90%。
+- 255 項測試與佛斯特 61/61 代表給定結構資料後的規則、公式及 Excel 回歸，不代表 AI 看原圖達 90%。
 - 名稱含 `live` 的腳本可能呼叫付費 AI，不屬一般離線測試。
 - Windows 沒有 bash，故 `npm test` 的 Linux wrapper 不直接執行；本輪已分別完成其核心 Node 測試、Vinext build 與產物驗證。
 

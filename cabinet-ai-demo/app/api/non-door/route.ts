@@ -9,6 +9,7 @@ import { normalizeNonDoorAnalysis } from "../../non-door-normalize.ts";
 import { prepareCarcassStage } from "../../face-machining.ts";
 import { documentEvidencePromptSummary, isAllowedDocumentEvidence, type DocumentEvidence } from "../../document-evidence.ts";
 import type { CarcassResult } from "../../carcass.ts";
+import { validatedCarcassLocks, type CarcassLock } from "../../carcass-locks.ts";
 import { mapInBatches } from "../../bounded-concurrency.ts";
 import {
   applyStructureVerification,
@@ -147,25 +148,6 @@ const STRUCTURE_VERIFY_INSTRUCTIONS = `你是工程圖「實體結構線與抽�
 只輸出指定JSON。`;
 
 type JsonRecord = Record<string, unknown>;
-type CarcassLock = CarcassResult["cabinets"][number];
-
-function positiveInteger(value: unknown) {
-  const number = Number(value);
-  return Number.isFinite(number) && number > 0 ? Math.round(number) : 0;
-}
-
-function validatedCarcassLocks(value: unknown, segmentation: SegmentationPlan) {
-  if (!value || typeof value !== "object") return new Map<string, CarcassLock>();
-  const result = value as Partial<CarcassResult>;
-  if (result.mode !== "carcass_only" || !Array.isArray(result.cabinets)) return new Map<string, CarcassLock>();
-  const allowedIds = new Set(segmentation.cabinets.map((item) => item.cabinetId));
-  const locks = result.cabinets.filter((item): item is CarcassLock => Boolean(
-    item && allowedIds.has(String(item.cabinetId || ""))
-    && positiveInteger(item.widthMm) > 0 && positiveInteger(item.heightMm) > 0 && positiveInteger(item.depthMm) > 0,
-  ));
-  return new Map(locks.map((item) => [item.cabinetId, item]));
-}
-
 function parseRun(result: Awaited<ReturnType<typeof callStructuredAI>>, label = "非門構件") {
   if (!result.parsed.ok) {
     const error = new Error(result.parsed.message) as Error & { code?: string; status?: number };

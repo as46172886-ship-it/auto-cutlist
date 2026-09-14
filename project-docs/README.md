@@ -1,6 +1,6 @@
 # 自動拆料專案總索引
 
-整理日期：2026-09-13。這份建檔涵蓋目前工作區可取得的資料，不是全部歷史對話逐字稿。
+整理日期：2026-09-14。這份建檔涵蓋目前工作區可取得的資料，不是全部歷史對話逐字稿。
 
 ## 建議分類
 
@@ -23,11 +23,11 @@
 
 ## 保存狀態
 
-- 本機程式基準提交：`3069552d161ddca1e050cc7abe1689d1eaaa1480`。
-- 另有未提交草稿 `app/face-machining.ts`，尚未接入 API、測試或部署，須一起保存為「未完成」，不能當正式功能。
-- 本次僅整理文件與清冊，不修改計算程式，不進行正式掃圖或部署。
-- GitHub 目標庫為私人 `as46172886-ship-it/auto-cutlist`；2026-09-13 GitHub 官方授權端點事故期間仍無法完成連接，本次文件建立不代表已上傳 GitHub。
-- 現有程式遠端是 Sites 原始碼倉庫，不是 GitHub。GitHub 建檔不取代原 Sites、不變更網站存取權。
+- 現行 Sites 原始碼提交：`11c1f3aa0e05b3f1db8795675d7d1e899970ce45`，已部署為 v81；歷史移轉基準仍保留在 `SOURCE_VERSION.txt`。
+- `app/face-machining.ts` 已接入 `/api/non-door` 與 `/api/doors`，並由現行測試覆蓋；未完成項目改以 [STATUS.md](STATUS.md) 為準。
+- GitHub 私人庫 `as46172886-ship-it/auto-cutlist` 保存程式、測試、規則文件與可取得附件；本次 v81 快照同步完成後以倉庫最新 HEAD 為準。
+- GitHub 是移轉與稽核用封存；Sites 仍是網站原始碼與部署來源。同步 GitHub 不取代 Sites，也不變更 owner-only 存取權。
+- 本輪已完成離線測試與正式站部署，但未執行付費原圖正式掃描；正式 AI 90% 仍待依 [VALIDATION.md](VALIDATION.md) 驗收及複驗。
 
 ## GitHub 保存方式
 

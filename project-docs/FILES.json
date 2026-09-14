@@ -1,26 +1,14 @@
 {
   "date": "2026-09-14",
-  "scope": "Current private GitHub archive inventory after Sites v80 sync; excludes Git metadata, dependencies, build output, credentials, cookies and local auth",
-  "sourceCommit": "28b2105425fc3ca7cd0d767d2362fa261cd55b55",
-  "sitesVersion": 80,
+  "scope": "Current private GitHub archive inventory after Sites v81 sync; excludes Git metadata, dependencies, build output, credentials, cookies and local auth",
+  "sourceCommit": "11c1f3aa0e05b3f1db8795675d7d1e899970ce45",
+  "sitesVersion": 81,
   "targetRepository": "as46172886-ship-it/auto-cutlist",
   "files": [
     {
       "path": ".gitignore",
       "bytes": 389,
       "sha256": "8f8cac273618cb92ae480275c76eaac70117e14e3946a7955e3dfbbd24fd8d67",
-      "status": "current-snapshot"
-    },
-    {
-      "path": "估價原稿含料單(1).xls",
-      "bytes": 362496,
-      "sha256": "429262b7687b8885f488b5829d91216a959ecc080104b24444ebd2d4b3a43bda",
-      "status": "current-snapshot"
-    },
-    {
-      "path": "佛斯特_修正拆料表(1).xlsx",
-      "bytes": 10778,
-      "sha256": "346591c74ecc5d2143586b33e0e0f96baafbc7f67a0ce99d50721fad510158ce",
       "status": "current-snapshot"
     },
     {
@@ -45,84 +33,6 @@
       "path": "cabinet-ai-demo/.openai/hosting.json",
       "bytes": 91,
       "sha256": "b3da13b1e1be72a815314c59740e7109e27c7f975ca375cc58f5b0c2bde1e66a",
-      "status": "current-snapshot"
-    },
-    {
-      "path": "cabinet-ai-demo/.vinext/fonts/geist-8ac0455e797f/geist-001175b1.woff2",
-      "bytes": 16540,
-      "sha256": "58a6b173d5ca1dec92166ea3c6cb1a84a4144556d10928ac14e8e6b40e4787bd",
-      "status": "current-snapshot"
-    },
-    {
-      "path": "cabinet-ai-demo/.vinext/fonts/geist-8ac0455e797f/geist-52306abf.woff2",
-      "bytes": 7968,
-      "sha256": "f689f638f29fff460a2d5749edb5d5c38d7bef0389f32032d871f23fc6ebb008",
-      "status": "current-snapshot"
-    },
-    {
-      "path": "cabinet-ai-demo/.vinext/fonts/geist-8ac0455e797f/geist-875ccdd4.woff2",
-      "bytes": 14900,
-      "sha256": "6129fc8571c3e0cb0a4c41f5160c974a843b055009dc4ad8858bd808e18a2d86",
-      "status": "current-snapshot"
-    },
-    {
-      "path": "cabinet-ai-demo/.vinext/fonts/geist-8ac0455e797f/geist-98bbbccb.woff2",
-      "bytes": 29288,
-      "sha256": "9b6f5ff45b278c744b5f379a2c4ecbaf858a842b8eaf82ac8d21b699ca16c608",
-      "status": "current-snapshot"
-    },
-    {
-      "path": "cabinet-ai-demo/.vinext/fonts/geist-8ac0455e797f/geist-ff2310f5.woff2",
-      "bytes": 7252,
-      "sha256": "b7a545bbb08256bd809f11cfe66d88da3e22d169ea4407737b1ef0ec1ed3d791",
-      "status": "current-snapshot"
-    },
-    {
-      "path": "cabinet-ai-demo/.vinext/fonts/geist-8ac0455e797f/style.css",
-      "bytes": 1929,
-      "sha256": "eea5dc3faecd01fc21e413ba54536fe27fbdaf89cea08a566532459ba164a1a2",
-      "status": "current-snapshot"
-    },
-    {
-      "path": "cabinet-ai-demo/.vinext/fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2",
-      "bytes": 23108,
-      "sha256": "5f3d6ad60f29d6cb708414ec6887163d63bf197377ef5417d2483ff31ace6c3b",
-      "status": "current-snapshot"
-    },
-    {
-      "path": "cabinet-ai-demo/.vinext/fonts/geist-mono-00e989178794/geist-mono-0638449e.woff2",
-      "bytes": 5892,
-      "sha256": "d67e4a94ba498635f764ddca7d1ec4271f5642f032eb24b426764480f66f8497",
-      "status": "current-snapshot"
-    },
-    {
-      "path": "cabinet-ai-demo/.vinext/fonts/geist-mono-00e989178794/geist-mono-44745446.woff2",
-      "bytes": 14712,
-      "sha256": "745994b5cd950ec201b66526375f057d540847cccfc70f4f24f5f571d26d3923",
-      "status": "current-snapshot"
-    },
-    {
-      "path": "cabinet-ai-demo/.vinext/fonts/geist-mono-00e989178794/geist-mono-44e03052.woff2",
-      "bytes": 12872,
-      "sha256": "75b3bedbebc35f347c0ae3b416aa871941555357e7b0f83767eb5987875589ed",
-      "status": "current-snapshot"
-    },
-    {
-      "path": "cabinet-ai-demo/.vinext/fonts/geist-mono-00e989178794/geist-mono-971fb274.woff2",
-      "bytes": 7728,
-      "sha256": "16e1d48b6dd29eb240aec5db36184eb182933c082cd43de7f35af686d58087d2",
-      "status": "current-snapshot"
-    },
-    {
-      "path": "cabinet-ai-demo/.vinext/fonts/geist-mono-00e989178794/geist-mono-f6b33328.woff2",
-      "bytes": 6204,
-      "sha256": "e27f657e38d52887baa3b6b2f812bef93dfdd356f0810e40edd4ee284cc7e9f6",
-      "status": "current-snapshot"
-    },
-    {
-      "path": "cabinet-ai-demo/.vinext/fonts/geist-mono-00e989178794/style.css",
-      "bytes": 2334,
-      "sha256": "bf5efc6e7e41fe14297ae2d8e594d210095c47ecab0b308e42836b73db8ab08f",
       "status": "current-snapshot"
     },
     {
@@ -151,8 +61,8 @@
     },
     {
       "path": "cabinet-ai-demo/app/api/analyze/schemas.ts",
-      "bytes": 21492,
-      "sha256": "460cc7a5caefdfd3f5cbfaed8938f0ba0b8bc8e47c8092d1a81d3e25f0decf5c",
+      "bytes": 22259,
+      "sha256": "235febf6a7db0a66824e8ea798c601a778b395a7cbc2715828bdf45490d62c39",
       "status": "current-snapshot"
     },
     {
@@ -199,8 +109,8 @@
     },
     {
       "path": "cabinet-ai-demo/app/api/non-door/route.ts",
-      "bytes": 26754,
-      "sha256": "3c8e5c959ac161a23cadb8e47761eba0e1b830a09839810fd977ac65ec28dbf2",
+      "bytes": 25897,
+      "sha256": "12893b642757cddea17e3d3d47789a0ffe7a94b77c3eaddf10bc2a4016d669cc",
       "status": "current-snapshot"
     },
     {
@@ -217,14 +127,14 @@
     },
     {
       "path": "cabinet-ai-demo/app/api/segment/instructions.ts",
-      "bytes": 5831,
-      "sha256": "e0ce61317edbab5a63c5859e8cb7e43591955972caff0508d153280eb10c3030",
+      "bytes": 7468,
+      "sha256": "5f2ae39574ec4fd0cca9a994896d83f24936aae1c18ecda04cf2f3a29c9f5b03",
       "status": "current-snapshot"
     },
     {
       "path": "cabinet-ai-demo/app/api/segment/route.ts",
-      "bytes": 3355,
-      "sha256": "f5aa73cd270f99ee27c205e2af75fcc5ab24d72f83e6fe36c8553be5a50744ab",
+      "bytes": 6797,
+      "sha256": "3129bd42174e7f4d1c29a0ff046609d1ccae47b6cd4ec60f71df246840349e39",
       "status": "current-snapshot"
     },
     {
@@ -243,6 +153,12 @@
       "path": "cabinet-ai-demo/app/cabinet-quantity-summary.ts",
       "bytes": 1591,
       "sha256": "fcf9bb6bfa6d33090cc0ef7b393f88669315f84b95d924b3f947b69b0e38c7b8",
+      "status": "current-snapshot"
+    },
+    {
+      "path": "cabinet-ai-demo/app/carcass-locks.ts",
+      "bytes": 2149,
+      "sha256": "6234afae78c29b61d3f78c9a1e4e8b4673bf1fc8133ec5a6cf0787df3e3e94f5",
       "status": "current-snapshot"
     },
     {
@@ -403,8 +319,8 @@
     },
     {
       "path": "cabinet-ai-demo/app/page.tsx",
-      "bytes": 19046,
-      "sha256": "3c2811b80d05a258e0e76c4d38d3ecb6e5296310499d8c3eed3b068894c5dc26",
+      "bytes": 20311,
+      "sha256": "ef6062084d8aa2bb9c92523a87a824a56dfc2adc236e6301ec8a355813b9f00f",
       "status": "current-snapshot"
     },
     {
@@ -441,6 +357,12 @@
       "path": "cabinet-ai-demo/app/scan-retry.ts",
       "bytes": 672,
       "sha256": "406c452897d93ffb46e041b7228988e65d7f1d8b3a2bd85be7d1015a3a812803",
+      "status": "current-snapshot"
+    },
+    {
+      "path": "cabinet-ai-demo/app/segmentation-internal.ts",
+      "bytes": 6127,
+      "sha256": "6629bd3a2624fdaf970431c06323a73e235eef88e24b7183c02d6df93d94aa8b",
       "status": "current-snapshot"
     },
     {
@@ -493,8 +415,8 @@
     },
     {
       "path": "cabinet-ai-demo/docs/research-log.md",
-      "bytes": 25669,
-      "sha256": "ab3c46af541b343a4f2c9b9b380fe108514735046f48369607b46f993261c369",
+      "bytes": 27633,
+      "sha256": "e09a95a719f0a54531b30cf3459a9d7c2eeaffda88d7506d4467c1a92ce11556",
       "status": "current-snapshot"
     },
     {
@@ -750,6 +672,12 @@
       "status": "current-snapshot"
     },
     {
+      "path": "cabinet-ai-demo/tests/carcass-locks.test.mjs",
+      "bytes": 2919,
+      "sha256": "adcd3d079f4ae35db90de544b354f6f5a3aa1d2319cb00ad784eaa111cf04256",
+      "status": "current-snapshot"
+    },
+    {
       "path": "cabinet-ai-demo/tests/carcass-only.test.mjs",
       "bytes": 9748,
       "sha256": "0f8d63fd0c401cdb0ef9b166b6683bfa1878f809f870a407f90cc2b94e0df3a8",
@@ -864,6 +792,12 @@
       "status": "current-snapshot"
     },
     {
+      "path": "cabinet-ai-demo/tests/segmentation-internal.test.mjs",
+      "bytes": 4644,
+      "sha256": "931da7303297b06cf025ddea8b4aec621c5520139d29748d468001fb69566a97",
+      "status": "current-snapshot"
+    },
+    {
       "path": "cabinet-ai-demo/tests/segmentation.test.mjs",
       "bytes": 1439,
       "sha256": "7aec75ed350f398a6bde6bd309edac3707117f978832c56e54b148db89a8face",
@@ -907,20 +841,20 @@
     },
     {
       "path": "CHANGELOG.txt",
-      "bytes": 9365,
-      "sha256": "8e247a6d0a8e1c5ca13312111eeffd08285c99b5d4f084c57ed48b1e9238bfd2",
+      "bytes": 9525,
+      "sha256": "c32a760d81f6888d5b53cc54f817bf0ea98efb95642cc672dc28393ba08f4caa",
       "status": "current-snapshot"
     },
     {
       "path": "CURRENT_VERSION.txt",
       "bytes": 365,
-      "sha256": "85c7faa32ba855622f090d10aacfa5173fb14e2d7ab5a38a5f39a8f5031f3771",
+      "sha256": "41d8b40880ec6716a455bc1d5eb09520fdf5123ace6cda7b7dc387962d81c6d9",
       "status": "current-snapshot"
     },
     {
       "path": "HANDOFF.md",
-      "bytes": 4771,
-      "sha256": "33027aedaa26a28be45ef917a059e5c79539b2e47b537706c5914e875ef913a4",
+      "bytes": 5261,
+      "sha256": "01f73eca6dc89fca3db72490d7316d13e2deca76b724dc4ef66bbdc4df0dd039",
       "status": "current-snapshot"
     },
     {
@@ -2028,15 +1962,15 @@
       "status": "current-snapshot"
     },
     {
-      "path": "offline-evidence/layout-pdf/估價原稿含料單(1).pdf",
-      "bytes": 2375182,
-      "sha256": "97782f0e7ab45be41fe6a41a33e114c757cb971a2f823c64d7b2562798eda751",
-      "status": "current-snapshot"
-    },
-    {
       "path": "offline-evidence/layout-pdf/current-foster-output.pdf",
       "bytes": 158502,
       "sha256": "4ed2438b36c140713bc75083e3ce07fe2b7bc44d4d901633af5aa82e57ff8e19",
+      "status": "current-snapshot"
+    },
+    {
+      "path": "offline-evidence/layout-pdf/估價原稿含料單(1).pdf",
+      "bytes": 2375182,
+      "sha256": "97782f0e7ab45be41fe6a41a33e114c757cb971a2f823c64d7b2562798eda751",
       "status": "current-snapshot"
     },
     {
@@ -2204,19 +2138,19 @@
     {
       "path": "project-docs/FORMULAS.md",
       "bytes": 6041,
-      "sha256": "b03dccf82d7c9c836f0d71c7d7f4d80954ba79d3899c5242b68ea8132ddeb2a5",
+      "sha256": "a4139134991a7a838b4d4b3a3ab48bfb20721368b49f96531b02d6df6c468802",
       "status": "current-snapshot"
     },
     {
       "path": "project-docs/README.md",
-      "bytes": 2860,
-      "sha256": "f8e705365c14c4168ec2561d7f40db6d722a63e08cc0595bed5f3985ab27a41d",
+      "bytes": 3029,
+      "sha256": "c12bdc179c955cd1eb94d57474c81c805cdc3f30b6a259f3732e3b407b4ff662",
       "status": "current-snapshot"
     },
     {
       "path": "project-docs/RULES.md",
-      "bytes": 3973,
-      "sha256": "96359dbb2d4ad4f5834561ea3bfd3a84b99fb6c7ba6498fc0ab95d3e2b8d3afc",
+      "bytes": 4223,
+      "sha256": "cc1678eb377269479ec93b04b5b3edb6f23dbac3ad966441cbc03a90610345d7",
       "status": "current-snapshot"
     },
     {
@@ -2227,26 +2161,38 @@
     },
     {
       "path": "project-docs/STATUS.md",
-      "bytes": 2592,
-      "sha256": "c74727a738ebfe6c54102b8e90922809c85f4fc212d297a00c5cbcfdf5f9a6e0",
+      "bytes": 2823,
+      "sha256": "080070792976b019171948fc7f16aef84331449f8c501ec455244349a8c79fb6",
       "status": "current-snapshot"
     },
     {
       "path": "project-docs/TOOLS.md",
-      "bytes": 2565,
-      "sha256": "32f126773c5e23da8fea6e9f8bc6fe629151339ce744805230cd75f0cdb43e6e",
+      "bytes": 2644,
+      "sha256": "5fde101c6440df4db761f9c744dd6d692d977d8154d3286d1a69fdd31c439255",
       "status": "current-snapshot"
     },
     {
       "path": "project-docs/VALIDATION.md",
-      "bytes": 2112,
-      "sha256": "4f2c3ae738d730ecb11ad63793db9ce23b7fea893e2f78bb57f65196394df8c2",
+      "bytes": 2173,
+      "sha256": "68dd05f39cc3fb69695fdfdad5f4903bff3f1024b2033f86931d5698cf735e5d",
       "status": "current-snapshot"
     },
     {
       "path": "README.md",
       "bytes": 1292,
-      "sha256": "f11480d48621db501ca24e9ff40cfc779232a1e32f8fe68df823602b4f7d4fb7",
+      "sha256": "9fe94ed358325b9a1fd5fdd09441174223902489011762049c92844247019b85",
+      "status": "current-snapshot"
+    },
+    {
+      "path": "references/auto_cutlist_research_blueprint_2026-08-24.md",
+      "bytes": 27451,
+      "sha256": "744129def79d7a43857e63aee5938a149844fd423ba90ca99665090ac57f62aa",
+      "status": "current-snapshot"
+    },
+    {
+      "path": "references/系統櫃/佛斯特_修正拆料表.xlsx",
+      "bytes": 10778,
+      "sha256": "346591c74ecc5d2143586b33e0e0f96baafbc7f67a0ce99d50721fad510158ce",
       "status": "current-snapshot"
     },
     {
@@ -2274,9 +2220,9 @@
       "status": "current-snapshot"
     },
     {
-      "path": "references/系統櫃/佛斯特_修正拆料表.xlsx",
-      "bytes": 10778,
-      "sha256": "346591c74ecc5d2143586b33e0e0f96baafbc7f67a0ce99d50721fad510158ce",
+      "path": "references/設計師估價原稿含料單(2)_衣櫃試拆_Sheet1填入版.xlsx",
+      "bytes": 108167,
+      "sha256": "0b79e2eb88603dae9a4a00a4805af2ed352b7294b0248fedc90347e1cbf325a9",
       "status": "current-snapshot"
     },
     {
@@ -2292,18 +2238,6 @@
       "status": "current-snapshot"
     },
     {
-      "path": "references/設計師估價原稿含料單(2)_衣櫃試拆_Sheet1填入版.xlsx",
-      "bytes": 108167,
-      "sha256": "0b79e2eb88603dae9a4a00a4805af2ed352b7294b0248fedc90347e1cbf325a9",
-      "status": "current-snapshot"
-    },
-    {
-      "path": "references/auto_cutlist_research_blueprint_2026-08-24.md",
-      "bytes": 27451,
-      "sha256": "744129def79d7a43857e63aee5938a149844fd423ba90ca99665090ac57f62aa",
-      "status": "current-snapshot"
-    },
-    {
       "path": "SOURCE_VERSION.txt",
       "bytes": 107,
       "sha256": "de81145d566488a5169bc5b74dac62423a70b59707624f1c5f379b6720af29ad",
@@ -2312,7 +2246,19 @@
     {
       "path": "START_HERE.md",
       "bytes": 2465,
-      "sha256": "ea4a95098108e26956e2a279aa2a280edc0ca7c5878cc32d70a1ead47701ad92",
+      "sha256": "4d23c2447cb26daf4c3b10d44deab374129fc8f6a87d77a528e6cfc5e53ba65d",
+      "status": "current-snapshot"
+    },
+    {
+      "path": "估價原稿含料單(1).xls",
+      "bytes": 362496,
+      "sha256": "429262b7687b8885f488b5829d91216a959ecc080104b24444ebd2d4b3a43bda",
+      "status": "current-snapshot"
+    },
+    {
+      "path": "佛斯特_修正拆料表(1).xlsx",
+      "bytes": 10778,
+      "sha256": "346591c74ecc5d2143586b33e0e0f96baafbc7f67a0ce99d50721fad510158ce",
       "status": "current-snapshot"
     }
   ]

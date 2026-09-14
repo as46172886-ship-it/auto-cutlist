@@ -2,11 +2,11 @@
 
 ## 2026-09-14 目前狀態
 
-- 正式網站沿用原 Sites 專案與網址，已部署 Sites v80；對應來源提交為 `28b2105425fc3ca7cd0d767d2362fa261cd55b55`。
+- 正式網站沿用原 Sites 專案與網址，已部署 Sites v81；對應來源提交為 `11c1f3aa0e05b3f1db8795675d7d1e899970ce45`。
 - 網址：https://cabinet-ai-demo.as46172886.chatgpt.site/
 - project_id：`appgprj_6a700075d288819187b803b1296c67e9`，保存在 `cabinet-ai-demo/.openai/hosting.json`。
 - 部署後再次確認 access mode 為 custom，唯一允許帳號是專案 owner，沒有群組、其他使用者或外部訪客；不可另建網站或自行改公開權限。
-- Windows 等價 Vinext 正式建置成功，完整 Node 測試 246/246 通過，部署封裝通過 Worker entrypoint 與 hosting manifest 驗證。
+- Windows 等價 Vinext 正式建置成功，完整 Node 測試 255/255 通過，部署封裝通過 Worker entrypoint 與 hosting manifest 驗證。
 - 佛斯特雙立面結構化 fixture 仍為 61/61。這只驗證確定性公式與 Excel 輸出，不是 AI 看原圖的正式辨識 F1；90% 目標尚未驗收。
 - 正式站沒有 D1 或 R2 binding，`db/schema.ts` 仍為空，也沒有正式 migration。本次所稱規則資料庫是 Git 版本控制中的 TypeScript 規則，不是雲端案件資料庫。
 
@@ -19,14 +19,16 @@
 - 門的片數／開向／尺寸與門面加工證據任一未閉合時，以明確 422 錯誤停止完整料單；已確認桶身分析仍可保留。
 - 中立分隔的擋板依每支實體建立，分段群組必須完整包含 1..N 與每段完成寬，不允許一支跨中立。
 - 尺寸候選保留向量線 ID 與跨度。不同平行線不混算；同線不同段只有端點實際相接且不重疊／不包含時才可加總；明確總高不再重複加相鄰段。
+- 同一張立面同時看得到桶內與門面時，分割可以保留重疊但角色不同的桶內／門面裁切；若第一輪缺桶內裁切，只針對缺少的桶號做一次聚焦修復，純門面圖仍維持阻擋，不會猜出桶內料單。
+- 桶身讀圖回傳的局部 `C01`、`C02` 等編號，只有單一立面且獨立寬度與分割結果相符時才安全對應為 `E01-C01`、`E01-C02`；多立面或寬度不符不做猜測，避免遺失或錯套寬高深鎖定。
 - 規則文字不使用籠統「橫板」料件名稱，改指實際頂板、底板、固格或擋板。
-- 先前第 5／6 張全圖漏掃、非標準板厚資料流、字型 404 與 19 桶裁切保留修正也都包含在目前 v80。
+- 先前第 5／6 張全圖漏掃、非標準板厚資料流、字型 404 與 19 桶裁切保留修正也都包含在目前 v81。
 
 ## 可重現驗證
 
 在 `cabinet-ai-demo`：
 
-- 完整離線測試：`node --test tests/*.test.mjs` → 246/246。
+- 完整離線測試：`node --test tests/*.test.mjs` → 255/255。
 - Windows 等價建置：`npx vinext build` → 成功；`dist/server/index.js` 具 `default.fetch`，`dist/.openai/hosting.json` 可解析。
 - 佛斯特結構化診斷：`node scripts/diagnose-foster-combined.mjs '../佛斯特_修正拆料表(1).xlsx'` → 61/61；仍不得稱正式 AI 辨識率。
 - `npm test` 與原 Linux 包裝指令依賴 bash；Windows 本機沒有 bash，故採上述等價命令。

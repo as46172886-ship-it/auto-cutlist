@@ -1,10 +1,10 @@
 # 自動拆料 → Codex 接手包
 
-原始移轉整理日期為2026-09-11；本工作副本於2026-09-14更新到正式站 v80。這是目前可取得資料的移轉副本，不是全部歷史對話逐字匯出；原專案與原始檔保留。
+原始移轉整理日期為2026-09-11；本工作副本於2026-09-14更新到正式站 v81。這是目前可取得資料的移轉副本，不是全部歷史對話逐字匯出；原專案與原始檔保留。
 
 ## 如何接手
 
-解壓縮後，讓 Codex 開啟整個 codex-migration 資料夾，讀本檔、AGENTS.md、HANDOFF.md，再進入 cabinet-ai-demo 工作。目前 `cabinet-ai-demo` 的提交 `28b2105425fc3ca7cd0d767d2362fa261cd55b55` 已部署為原網站 Sites v80；後續仍須以 `CURRENT_VERSION.txt` 與 Sites 狀態核對，不可只信舊摘要。
+解壓縮後，讓 Codex 開啟整個 codex-migration 資料夾，讀本檔、AGENTS.md、HANDOFF.md，再進入 cabinet-ai-demo 工作。目前 `cabinet-ai-demo` 的提交 `11c1f3aa0e05b3f1db8795675d7d1e899970ce45` 已部署為原網站 Sites v81；後續仍須以 `CURRENT_VERSION.txt` 與 Sites 狀態核對，不可只信舊摘要。
 
 可交給 Codex 的第一句話：
 

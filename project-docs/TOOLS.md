@@ -16,7 +16,7 @@
 | Drizzle ORM／kit | 0.45.2／0.31.10；資料庫腳手架，不能因此宣稱正式資料庫已啟用 |
 | OpenAI Responses API | `app/api/analyze/pipeline.ts` 目前指定gpt-5.4；負責圖面結構化提取，非最終尺寸裁決 |
 | Sites | 現有私人網站部署與雲端秘密；GitHub歸檔不取代它 |
-| Git／GitHub | 原始碼與版本保存；目標為私人 `as46172886-ship-it/auto-cutlist`，目前因官方事故尚未連接／上傳 |
+| Git／GitHub | 原始碼與版本保存；私人 `as46172886-ship-it/auto-cutlist` 已連接並同步目前快照 |
 | LibreOffice | 歷史Excel開啟／重存／PDF驗證，不是正式看圖AI |
 
 ## 程式入口
@@ -28,7 +28,7 @@
 - `app/sop.ts`：基本／非門／完整三種計算入口；`drawer-rules.ts`、`hinge-rules.ts`、`quantity-rules.ts`：固定公式。
 - `app/sop-rules.ts`：提示與展示規則；與公式helper可能有歷史差異，見STATUS。
 - `app/xlsx-export.ts`：Excel輸出；`tests/`：離線回歸；`scripts/`：診斷與驗收。
-- `app/face-machining.ts`：未接入草稿，非已啟用工具。
+- `app/face-machining.ts`：已接入 `/api/non-door` 與 `/api/doors`，負責先清除門面加工，再依確認的門／屜頭證據回算退縮、擋板與加工。
 
 ## 憑證與執行限制
 

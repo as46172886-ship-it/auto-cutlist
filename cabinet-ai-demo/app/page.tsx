@@ -15,6 +15,7 @@ import { missingStructuralSourceCabinetIds, nonDoorClientTimeoutMs, selectStruct
 import { doorClientTimeoutMs } from "./door-scan-budget";
 import { missingDoorSourceCabinetIds, selectDoorCropsForRequest } from "./door-scan";
 import { collectSlantedHandleMarkerEvidence } from "./slanted-handle-audit";
+import { buildPreflightReport } from "./preflight";
 
 type ApiError = { error?: string; code?: string };
 type MaterialRow = { item: string; spec: string; qty: number; note: string };
@@ -38,6 +39,7 @@ type NonDoorPayload = {
 type PreparedImage = { name: string; dataUrl: string; documentEvidence?: DocumentEvidence };
 
 const REQUEST_TIMEOUT_MS = 75_000;
+const SEGMENTATION_TIMEOUT_MS = 120_000;
 
 async function postJson<T>(url: string, body: unknown, timeoutMessage: string, timeoutMs = REQUEST_TIMEOUT_MS) {
   const controller = new AbortController();
@@ -137,15 +139,29 @@ export default function Home() {
       };
       const [carcass, plan] = await Promise.all([
         scanCarcass(),
-        postJson<SegmentationPlan>("/api/segment", { images, orientation: locked }, "分桶超過75秒，已停止本次等待；請重試。"),
+        postJson<SegmentationPlan>("/api/segment", { images, orientation: locked }, "分桶與桶內裁切複核超過120秒，已停止本次等待；請重試。", SEGMENTATION_TIMEOUT_MS),
       ]);
       setSegmentation(plan);
+      const plannedPreflight = buildPreflightReport(plan);
+      if (!plannedPreflight.ready) {
+        const blocked = plannedPreflight.checks.filter((check) => check.status === "blocked").map((check) => `${check.scope}：${check.detail}`);
+        throw new Error(`前置分桶資料尚未閉合：${blocked.join("；")}`);
+      }
       setBusyPhase("第3關：逐桶放大並掃描桶身、內裝與獨立構件");
       const crops = await createCabinetCrops(images, plan);
+      const croppedPreflight = buildPreflightReport(plan, crops);
+      if (!croppedPreflight.ready) {
+        const missingActual = plan.cabinets
+          .filter((cabinet) => !crops.some((crop) => crop.cabinetId === cabinet.cabinetId && crop.role === "internal" && (crop.scanPass || 1) === 1))
+          .map((cabinet) => cabinet.cabinetId);
+        throw new Error(missingActual.length
+          ? `已完成分桶，但瀏覽器實際裁切找不到${missingActual.join("、")}的桶內原圖；請確認上傳檔未更名，或補上較清楚的內部立面後再掃描。`
+          : `實際裁切證據尚未閉合：${croppedPreflight.checks.filter((check) => check.status === "blocked").map((check) => `${check.scope}：${check.detail}`).join("；")}`);
+      }
       const structuralCrops = selectStructuralCropsForRequest(crops, 18);
       if (!structuralCrops.length) throw new Error("未產生可用的桶內結構裁切，請換較完整圖面。");
       const missingStructureCabinets = missingStructuralSourceCabinetIds(structuralCrops, plan.cabinets.map((cabinet) => cabinet.cabinetId));
-      if (missingStructureCabinets.length) throw new Error(`裁切上限後缺少${missingStructureCabinets.join("、")}的桶內原圖，本次不產生可能漏桶的料單；請分成立面後再掃描。`);
+      if (missingStructureCabinets.length) throw new Error(`送出掃描前缺少${missingStructureCabinets.join("、")}的桶內原圖，本次不產生可能漏桶的料單；請分成立面或減少細節圖後再掃描。`);
       setBusyPhase("第3關：原圖與線稿逐桶交叉掃描");
       const enhancedCrops = await createCabinetEnhancements(structuralCrops as CabinetCropInput[]);
       const nonDoorResult = await postJson<NonDoorPayload>("/api/non-door", {

@@ -1,9 +1,9 @@
-site_commit=28b2105425fc3ca7cd0d767d2362fa261cd55b55
-sites_version=80
+site_commit=11c1f3aa0e05b3f1db8795675d7d1e899970ce45
+sites_version=81
 sites_project_id=appgprj_6a700075d288819187b803b1296c67e9
-deployment_id=appgdep_6aa744e1d8348191960d12add831c1cf
+deployment_id=appgdep_6aa793ae57408191a150a16c5420b4dc
 url=https://cabinet-ai-demo.as46172886.chatgpt.site/
-deployed_at_utc=2026-09-14T00:51:07.481940+00:00
+deployed_at_utc=2026-09-14T06:27:19.336887+00:00
 access=owner-only
 d1=disabled
 r2=disabled
