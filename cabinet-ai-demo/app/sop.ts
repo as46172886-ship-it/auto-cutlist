@@ -710,28 +710,6 @@ const DOOR_ONLY_HARDWARE = /GS鉸鍊|油壓器|J型?手把|斜手把|長斜把/i
  * through the deterministic SOP calculator above.
  */
 export function calculateNonDoorSop(input: AnalysisForSop) {
-  const drawerFronts: IndependentPanelRead[] = [];
-  for (const cabinet of input.cabinets || []) {
-    for (const [index, group] of (cabinet.drawerGroups || []).entries()) {
-      const widthMm = n(group.openingWidthMm) - 3;
-      const heightMm = n(group.openingHeightMm);
-      if (widthMm <= 0 || heightMm <= 0 || n(group.count) <= 0) continue;
-      drawerFronts.push({
-        id: `${cabinet.id || cabinet.name}-drawer-front-${index + 1}`,
-        elevationId: cabinet.elevationId,
-        name: "屜頭",
-        count: n(group.count),
-        widthMm,
-        heightMm,
-        thicknessMm: 18,
-        grainDirection: "none",
-        dimensionOrder: "width_height",
-        note: `[R15/R42/R49] 屜頭寬=單一抽屜開口${n(group.openingWidthMm)}-3=${widthMm}；高採圖面完成屜頭${heightMm}${group.slantedHandle ? `／長斜把×${n(group.count)}（加工備註；完整模式另列斜手把五金）` : ""}`,
-        evidence: group.evidence,
-      });
-    }
-  }
-
   const mirrors: IndependentPanelRead[] = (input.mirrors || [])
     .filter((mirror) => n(mirror.count) > 0 && n(mirror.widthMm || 0) > 0 && n(mirror.heightMm || 0) > 0)
     .map((mirror) => ({
@@ -750,8 +728,16 @@ export function calculateNonDoorSop(input: AnalysisForSop) {
 
   const sanitized: AnalysisForSop = {
     ...input,
-    cabinets: (input.cabinets || []).map((cabinet) => ({ ...cabinet, doors: [] })),
-    independentPanels: [...(input.independentPanels || []), ...drawerFronts, ...mirrors],
+    cabinets: (input.cabinets || []).map((cabinet) => ({
+      ...cabinet,
+      doors: [],
+      topBoardRetreatMm: 0,
+      bottomBoardRetreatMm: 0,
+      slantedFixedShelfCount: 0,
+      baffles: [],
+      drawerGroups: (cabinet.drawerGroups || []).map((group) => ({ ...group, slantedHandle: false })),
+    })),
+    independentPanels: [...(input.independentPanels || []), ...mirrors],
     specialHardware: (input.specialHardware || []).filter((item) => !DOOR_ONLY_HARDWARE.test(item.item || "")),
   };
   const result = calculateSop(sanitized);
@@ -778,9 +764,34 @@ export function calculateNonDoorSop(input: AnalysisForSop) {
     hardware: hardware.map(({ groupId: _groupId, ...row }) => row),
     notes: [...new Set([
       ...result.notes.filter((note) => !/門板|門片|門用五金|4E門/.test(note)),
-      "本模式已排除功能門板、鋁框門與門專用五金；屜頭、假門板等非功能門構件仍保留。",
+      "本階段只完成桶身、抽屜內裝與獨立構件；功能門板、屜頭、臉部加工與門專用五金留到最後門面階段。",
     ])],
   };
+}
+
+export function drawerFrontClosureIssues(input: AnalysisForSop) {
+  const issues: string[] = [];
+  for (const cabinet of input.cabinets || []) {
+    const declared = n(cabinet.drawerCount);
+    const groups = cabinet.drawerGroups || [];
+    const grouped = groups.reduce((sum, group) => sum + n(group.count), 0);
+    const ready = groups.reduce((sum, group) => {
+      return sum + (n(group.count) > 0 && n(group.openingWidthMm) > 3 && n(group.openingHeightMm) > 0 ? n(group.count) : 0);
+    }, 0);
+    if (grouped !== declared || ready !== declared) {
+      issues.push(`${cabinet.id || cabinet.name}標示抽屜${declared}個，但逐組資料為${grouped}個、可產生屜頭${ready}片；缺單一抽屜格寬或完成屜頭高度。`);
+    }
+  }
+  return issues;
+}
+
+export function assertDrawerFrontClosure(input: AnalysisForSop) {
+  const issues = drawerFrontClosureIssues(input);
+  if (!issues.length) return;
+  throw Object.assign(new Error(`抽屜與屜頭尚未閉合：${issues.join(" ")} 本次不產生可能漏屜頭的完整料單。`), {
+    status: 422,
+    code: "drawer_front_incomplete",
+  });
 }
 
 /**
@@ -789,6 +800,7 @@ export function calculateNonDoorSop(input: AnalysisForSop) {
  * and mirrors that are derived outside the core cabinet-body formulas.
  */
 export function calculateCompleteSop(input: AnalysisForSop) {
+  assertDrawerFrontClosure(input);
   const drawerFronts: IndependentPanelRead[] = [];
   const slantedHandlesByGroup = new Map<string, number>();
   for (const cabinet of input.cabinets || []) {

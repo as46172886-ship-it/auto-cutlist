@@ -6,6 +6,7 @@ import { cabinetCropSummary, type CabinetCropInput, type SegmentationPlan, isSeg
 import { cabinetReadSchema } from "../analyze/schemas.ts";
 import { callStructuredAI, isAllowedCabinetCrop, isAllowedImage, type ImageInput } from "../analyze/pipeline.ts";
 import { normalizeNonDoorAnalysis } from "../../non-door-normalize.ts";
+import { prepareCarcassStage } from "../../face-machining.ts";
 import { documentEvidencePromptSummary, isAllowedDocumentEvidence, type DocumentEvidence } from "../../document-evidence.ts";
 import type { CarcassResult } from "../../carcass.ts";
 import { mapInBatches } from "../../bounded-concurrency.ts";
@@ -17,7 +18,8 @@ import {
 import { missingStructuralSourceCabinetIds, NON_DOOR_PRIMARY_TIMEOUT_MS, NON_DOOR_SCAN_CONCURRENCY, NON_DOOR_VERIFY_TIMEOUT_MS, selectGlobalNonDoorImages, selectStructuralCropsForRequest } from "../../non-door-scan-budget.ts";
 
 const NON_DOOR_RULES = SOP_RULES
-  .filter((rule) => !["門板", "J把"].includes(rule.category) && !/門片五金/.test(rule.item))
+  .filter((rule) => !["門板", "J把", "斜把", "退縮", "擋板"].includes(rule.category)
+    && !/^R(?:2[6-9]|3[0-3])$/.test(rule.id) && !/門片五金/.test(rule.item))
   .map((rule) => `${rule.id}｜${rule.item}：${rule.rule}；防錯：${rule.check}`)
   .join("\n");
 
@@ -79,19 +81,19 @@ const STRUCTURE_VERIFY_SCHEMA = {
 export const NON_DOOR_INSTRUCTIONS = `你是系統櫃「非門構件證據盤點員」。你只看圖、抄結構與完成尺寸，不可自行算下料公式；後端會用固定SOP計算。
 
 本模式的範圍：
-- 必須保留：側板、頂底板、背板、背條、固格板、活格板、中立板、擋板、抽屜所有板件、屜頭、抽補板、封板／填縫板、假門板／固定飾板、踢腳板、檯面、鏡子，以及所有非門五金。
-- 必須排除：功能4E門板、鋁框門，以及GS鉸鍊、油壓器、J手把。斜手把只寫在屜頭或相關板件note作加工計價備註，不可放specialHardware。
+- 必須保留：側板、頂底板、背板、背條、固格板、活格板、中立板、抽屜箱體所有板件、抽補板、封板／填縫板、假門板／固定飾板、踢腳板、檯面、鏡子，以及所有非門五金。
+- 必須排除：功能4E門板、鋁框門、屜頭成品、斜把判定、退縮、擋板，以及GS鉸鍊、油壓器、J手把、斜手把。這些一律留到最後門面階段。
 - doors永遠輸出空陣列；不要花時間找門向或門片數。
 - independentPanels、kickboards、mirrors、specialHardware 每一筆都必須填其所屬 elevationId；不同立面的相同品項不可先合併。
 
 固定判讀順序：
 1. 任務文字已鎖定每桶ID、左右順序與外寬W；cabinets筆數必須完全相同，id／widthOrder／widthMm照抄，不得合桶、拆桶或改寬。
-2. 每桶追連續側板的桶底到桶頂，建立外高H；水平門縫、抽面線或內部橫板不會拆成另一桶。D、深、DEPTH都表示深度；D42.6代表42.6cm，不是板厚或料號。
+2. 每桶追連續側板的桶底到桶頂，建立外高H；水平門縫、抽面線或內部水平板線不會拆成另一桶。D、深、DEPTH都表示深度；D42.6代表42.6cm，不是板厚或料號。
 3. 逐開口數實體水平層板。門片雖不輸出，但門片虛線／三角線只是覆蓋符號，絕不可因此忽略其後方的層板、分隔板與中立。明確F中心線／固定註記才算固格；看得到水平層板而沒有固定證據就算活格。矮櫃上方有抽屜、下方仍有至少300mm收納開口時，必須逐格檢查該開口的活動層板，不得因排除門片而填0。全高中立左右同高各有板線時，左右各算一片，不能跨中立合成一片。
 4. 中立板要記實際作用跨度、上接與下接；並排抽屜若以中線分兩格，就一定要盤點該抽屜區短中立，不能因下方不是全高中立而刪除。只分隔抽屜區就不能延伸到下方。若一條實體中立從頂板連續到底板，必須填region=全高中立、referenceSpanMm=桶身H、topConnection=top_board、bottomConnection=bottom_board；不可只說「高度未標」而留下0。深度通常用standard_d_minus_29；高度由後端依完整板18或中心線9扣除。
 5. 抽屜逐組建立drawerGroups。openingWidthMm填「單一抽屜格」寬；openingHeightMm填圖面完成屜頭高；並排抽到中立中心線的那一側要反映centerlineBoundaryCount。抽牆高、滑軌、抽底板、木榫與屜頭尺寸全部由後端算，drawerWallHeightMm填0。
    已鎖定桶寬且抽屜佔整桶寬時，格寬直接用桶寬；上下多抽不除以抽數。圖面確認等分並排時才依欄數分配格寬；不等寬則依各自尺寸線讀取。不得因沒有另標抽屜箱體寬就問使用者，前後抽牆仍由既有99／90／81扣數計算。有抽屜必須建立屜頭所需的組數與完成高度資料；問題只寫尚缺的圖面資訊，不得輸出drawerGroups、openingWidthMm等內部欄位名。
-6. 斜把只影響真正形成斜把空間的橫板：固格前縮19、必要擋板依鎖附位置；不能因看見斜把就把整桶所有板件一起退。
+6. 本輪只建立未加工的桶身基準：topBoardRetreatMm=0、bottomBoardRetreatMm=0、slantedFixedShelfCount=0、baffles=[]，每組drawerGroups.slantedHandle=false。即使圖面看見24mm，也不可在本輪推定斜把、退縮或擋板。
 7. 獨立件逐件列independentPanels：封板、填縫板、檯面、假門板、固定飾板等；尺寸順序依圖面與紋向。功能門不得混入。
 8. kickboards每一段連續現場需求建立一筆siteLengthMm，不要自行切2800或加500；後端計算標準料與修正空間。
 9. mirrors必須填面數與完成寬高；鏡珠由後端每面4顆。
@@ -101,7 +103,7 @@ export const NON_DOOR_INSTRUCTIONS = `你是系統櫃「非門構件證據盤點
 本次已確認的判圖規則（優先於以下舊文字）：
 - 同一條標高尺寸線上由刻度分開的不同段互不包含；桶身段與腳高、檯面段分開。內部高度由另一條平行尺寸線標示。專用W／H／D關卡已依端點鎖定桶高後，不得再拿內部尺寸鏈提出是否包含同線另一段的問題。
 - 檯面位置特別標示2.5cm／25mm就是25mm檯面，直接列獨立檯面；長深取圖面，不因厚度判定再詢問使用者。
-- 先列桶身與抽屜等內部，再加入门板與屜頭加工。門與屜頭各自看圖判定斜把，不能互相套用。不要向使用者詢問「哪一片橫板」；應依實際門／屜頭位置記錄對應頂板、底板或擋板的具體證據。未判定的門加工留到門板階段，不以假設的門加工阻擋抽屜板料。固格的分類、數量與尺寸公式本次維持既有規則。
+- 先列桶身與抽屜等內部；門板與屜頭在下一階段一起加入。下一階段必須各自看圖判定斜把，不能互相套用；只可寫實際頂板、底板或擋板，沒有「橫板」這個籠統品項。固格的分類、數量與尺寸公式本次維持既有規則。
 
 正式非門SOP：
 ${NON_DOOR_RULES}
@@ -113,7 +115,7 @@ const CABINET_ONLY_INSTRUCTIONS = `${NON_DOOR_INSTRUCTIONS}
 本次是一個桶身的獨立掃描：
 - 原始裁切與「線稿增強」是同一桶的兩種影像證據，必須交叉核對；線稿只用來數直線與分格，文字及細節以原始裁切為準。
 - 只輸出schema要求的一個cabinet；不要在這一輪猜封板、鏡子、踢腳板、檯面或跨桶五金。
-- 先逐區數板線與抽屜框，再填欄位。不得因排除功能門而忽略門後的固格、活格、中立與擋板。
+- 先逐區數板線與抽屜框，再填欄位。不得因排除功能門而忽略門後的固格、活格與中立；臉部擋板留到最後門面階段。
 - 同一立面多桶共用相同桶底線，且其下方有80至150mm的共同水平尺寸時，這是落地櫃共用調整腳高度；不得只因單一裁切沒拍到尺寸字，就把其中一桶判成吊櫃。只有獨立垂直位置或明寫吊櫃／懸空時才可設isHanging=true。`;
 
 const GLOBAL_ONLY_INSTRUCTIONS = `你是系統櫃「全圖非門獨立構件掃描員」。桶身W/H/D與內部板件由其他逐桶掃描處理；本輪只查看完整原圖及灰階增強圖，盤點跨桶或位於櫃外的項目。
@@ -351,12 +353,12 @@ export async function POST(req: Request) {
         ...structureWarnings,
       ],
     };
-    const analysis = normalizeNonDoorAnalysis(raw, body.segmentation);
+    const analysis = prepareCarcassStage(normalizeNonDoorAnalysis(raw, body.segmentation));
     const result = calculateNonDoorSop(analysis);
     return Response.json({
       analysis,
       result,
-      scope: "all_except_doors",
+      scope: "carcass_before_faces",
       formulaMode: "deterministic",
       evidenceMode: {
         vectorPdfPages: documentEvidence.filter((item) => item.sourceKind === "vector_pdf").length,

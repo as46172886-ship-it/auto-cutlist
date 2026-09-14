@@ -446,7 +446,7 @@ test("under-countertop drawers do not retreat boards without slanted-handle evid
   assert.equal(topBottom.spec, "426 × 864");
 });
 
-test("only the horizontal board that forms a slanted-handle gap retreats 19mm", () => {
+test("only the specified top or bottom board retreats 19mm", () => {
   const result = calculateSop([{ ...baseCabinet, topBoardRetreatMm: 19 }]);
   assert.equal(result.materials.find((row) => row.item === "頂板").spec, "407 × 864");
   assert.equal(result.materials.find((row) => row.item === "底板").spec, "426 × 864");

@@ -7,7 +7,8 @@
 1. [START_HERE.md](START_HERE.md)
 2. [AGENTS.md](AGENTS.md)
 3. [HANDOFF.md](HANDOFF.md)
-4. [project-docs/README.md](project-docs/README.md)
+4. [CURRENT_VERSION.txt](CURRENT_VERSION.txt)
+5. [project-docs/README.md](project-docs/README.md)
 
 分類文件：
 
@@ -23,3 +24,5 @@
 重要限制：這不是全部歷史對話逐字稿；原始資料保留。登入狀態、cookies與明文金鑰不納入版本庫。正式AI辨識F1 90%尚未驗收，離線測試成績不可當成正式AI成績。
 
 正式網站仍沿用原Sites專案與owner-only權限；此GitHub保存庫只作版本歸檔，不取代網站或改變其權限。
+
+目前正式網站為 Sites v80，來源提交與部署識別記錄在 `CURRENT_VERSION.txt`；D1與R2均未啟用。

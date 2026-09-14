@@ -96,7 +96,7 @@ function pushCabinetRows(rows: QuantityAuditRow[], cabinet: CabinetRead) {
   const add = (row: Omit<QuantityAuditRow, "id" | "scope">) => rows.push({ id: `${baseId}-${rows.length}`, scope, ...row });
 
   add({ item: "側板", current: "後端建立 2片", expected: "每個獨立桶身 2片", difference: "相符（差 0片）", status: "automatic", detail: "共側板註記也不減量。", ruleIds: ["Q01"] });
-  add({ item: "頂板／底板", current: "頂板1片／底板1片", expected: "每桶各1片", difference: "相符（差 0片）", status: "automatic", detail: "若斜把成立，只改相關橫板深度，不改片數。", ruleIds: ["Q02"] });
+  add({ item: "頂板／底板", current: "頂板1片／底板1片", expected: "每桶各1片", difference: "相符（差 0片）", status: "automatic", detail: "若斜把成立，只改實際對應的頂板或底板深度，不改片數。", ruleIds: ["Q02"] });
   add({ item: "背板", current: "後端建立 1片", expected: "每桶1片", difference: "相符（差 0片）", status: "automatic", detail: `規格固定用(W-${profile.backWidthDeductionMm})×(H-${profile.backHeightDeductionMm})。`, ruleIds: ["Q03"] });
 
   const strip = resolveBackStripQuantity(cabinet);

@@ -1,59 +1,52 @@
 # 接手狀態與下一步
 
-## 2026-09-12目前狀態
+## 2026-09-14 目前狀態
 
-- 2026-09-11接手修正版已部署為Sites v77，原owner-only網址與權限維持不變。
-- 2026-09-12實站回報19桶以上案件被18張結構裁切上限誤判缺圖；已改為每桶必要internal原圖不可被補充視角上限截掉。235/235測試與Vinext建置通過，已部署為Sites v78。
-- 上述是程式與離線回歸，不是佛斯特正式AI辨識；90%目標仍未驗收。
+- 正式網站沿用原 Sites 專案與網址，已部署 Sites v80；對應來源提交為 `28b2105425fc3ca7cd0d767d2362fa261cd55b55`。
+- 網址：https://cabinet-ai-demo.as46172886.chatgpt.site/
+- project_id：`appgprj_6a700075d288819187b803b1296c67e9`，保存在 `cabinet-ai-demo/.openai/hosting.json`。
+- 部署後再次確認 access mode 為 custom，唯一允許帳號是專案 owner，沒有群組、其他使用者或外部訪客；不可另建網站或自行改公開權限。
+- Windows 等價 Vinext 正式建置成功，完整 Node 測試 246/246 通過，部署封裝通過 Worker entrypoint 與 hosting manifest 驗證。
+- 佛斯特雙立面結構化 fixture 仍為 61/61。這只驗證確定性公式與 Excel 輸出，不是 AI 看原圖的正式辨識 F1；90% 目標尚未驗收。
+- 正式站沒有 D1 或 R2 binding，`db/schema.ts` 仍為空，也沒有正式 migration。本次所稱規則資料庫是 Git 版本控制中的 TypeScript 規則，不是雲端案件資料庫。
 
-## 基準（歷史已回報，移轉時未重新跑AI）
+## 本次完成
 
-- 移轉來源HEAD：見 SOURCE_VERSION.txt，為 c82259de56af62a72e55ff2b920abfe456dba648。2026-09-11接手後工作副本另有未部署修正，不能再把該SHA當成目前工作副本內容。
-- 2026-09-11 Windows接手環境以鎖檔安裝後完成等價Vinext建置與Node測試：235/235通過。原Linux包裝腳本因本機沒有bash未直接執行。
-- 結構化雙立面＋公式＋Excel離線回歸：61/61，precision/recall/F1均100%。門板5/5列，門五金6/6列（列數不是片數）。
-- 完整AI看圖正式F1：尚未取得；90%目標與複驗未完成。
-- 新修正已保存，尚未部署到正式站，不能把本包版本說成已上線。
-- 舊的全域跨立面合併曾使模擬上限F1為76.1%；現已修正。這不是歷史AI實測基準。
-- LibreOffice往返重存61/61；雙立面輸出橫式A4共7頁，舊紀錄6頁屬較早輸出。
+- 拆成兩階段：先建立未加工桶身與可由尺寸推算的內裝，再把門板與屜頭一起掃描，最後回算退縮、擋板、門五金及屜頭。
+- 門與屜頭的斜把逐面獨立判斷，不再互相套用或以 24mm 自動傳播；只有確認證據才會讓實際頂板或底板前縮 19mm。
+- 固格本輪不由門面影像改寫，維持一般 `D-29 × (W-36)`。自動流程不建立斜把固格。
+- 抽屜維持原 99／90／81 扣數。每個宣告抽屜必須閉合到一片屜頭，否則以 `drawer_front_incomplete` 阻擋完整料單。
+- 門的片數／開向／尺寸與門面加工證據任一未閉合時，以明確 422 錯誤停止完整料單；已確認桶身分析仍可保留。
+- 中立分隔的擋板依每支實體建立，分段群組必須完整包含 1..N 與每段完成寬，不允許一支跨中立。
+- 尺寸候選保留向量線 ID 與跨度。不同平行線不混算；同線不同段只有端點實際相接且不重疊／不包含時才可加總；明確總高不再重複加相鄰段。
+- 規則文字不使用籠統「橫板」料件名稱，改指實際頂板、底板、固格或擋板。
+- 先前第 5／6 張全圖漏掃、非標準板厚資料流、字型 404 與 19 桶裁切保留修正也都包含在目前 v80。
 
-## 正式站與阻擋
+## 可重現驗證
 
-正式網址：https://cabinet-ai-demo.as46172886.chatgpt.site/
-Sites project_id：appgprj_6a700075d288819187b803b1296c67e9，保存在原始碼 .openai/hosting.json。
+在 `cabinet-ai-demo`：
 
-2026-09-08/09曾遇雲端Google登入502 Connection refused；使用者複製授權URL後見400 Missing required parameter: redirect_uri。尚未證實兩者同一根因，不能歸咎帳密。
-最新該次查詢：專案active、未disabled、使用者owner；首頁於2026-09-08T17:15:38Z回200，之後11個字型檔404，路徑包含 /workspace/sites/cabinet-ai-demo/.vinext/fonts/。部分請求帶平台登入識別，並非所有瀏覽器都未登入。字型404通常影響字型載入，不能當成Google登入502原因。
-多次雲端接手請求成功但使用者看不到按鈕。使用者本機登入不代表雲端瀏覽器同步登入。
-2026-09-11重新查得：同一project仍active、未disabled、目前使用者為owner、access仍為owner-only custom，latest version為76；雲端秘密清單仍有OPENAI_API_KEY項目且值受平台遮蔽。近期正式日誌仍可重現11個Geist字型404，請求同時帶平台登入識別，因此字型404不是登入失敗證據。接手工作副本已移除next/font依賴，改用本機中文字型fallback；新建置不再引用錯誤字型路徑，但尚未部署。
-
-## 接手先做
-
-1. 讀取原始 README、package.json、scripts/build-verified.sh；需要Node>=22.13。沿用鎖檔與現有安裝流程。平台專屬環境不可假設新Codex具備。
-2. 先跑 npm test（包含build及全部tests）；需要依賴時依README安裝。不要直接跑 scripts/*live*，那可能呼叫收費AI。
-3. 離線完整診斷：在 cabinet-ai-demo 執行 node scripts/diagnose-foster-combined.mjs '../佛斯特_修正拆料表(1).xlsx'。
-4. 查字型資產路徑/打包問題與登入狀態；依平台正規方式恢復實站驗收，不改公開權限或自行重建OAuth。
-5. 找到當日正式測試帳本；若找不到，標記不明，不假設為0。按 scripts/lib/formal-site-run.mjs 和 example receipt 收集正式證據。
-6. 真實missing/extra才決定下一項準確率修正。未取得正式F1前不得宣布達標。
-
-## 已保存修正索引
-
-詳見 docs/research-log.md、CHANGELOG.txt、tests/：門向原圖證據鏈與遮罩；裁切逐桶公平分配與缺原圖阻擋；雙立面分組輸出、唯一ID與來源匹配；腳高共識；填縫板與衣桿隔離；抽屜上下/並排、每組寬度、N−1中立板、擋板分段保留及數量閉合；J把/斜把互斥；開向備註優先於舊文字；畫面重複列唯一鍵；完整61列Excel回歸。
-
-## 2026-09-11已重現並修正、尚未部署
-
-- `scanGlobalNonDoor`原本只送出前4張原圖，已改為保留前端允許的6張，新增第5/6張回歸測試。
-- 非標準板厚原本在非門正規化時被強制改回標準profile，Excel又只按品項推定厚度。現在只有`standard_sop`會標準化；`user_confirmed`與`unknown`沿資料流保留，板料合併鍵包含厚度，Excel優先使用逐列`thicknessMm`。
-- 移除`next/font`的Geist載入；新建置不再產生對`/workspace/sites/.../.vinext/fonts/`的引用。
-- 上述都是離線程式修正，不是正式佛斯特missing/extra結論，也不代表已上線。
+- 完整離線測試：`node --test tests/*.test.mjs` → 246/246。
+- Windows 等價建置：`npx vinext build` → 成功；`dist/server/index.js` 具 `default.fetch`，`dist/.openai/hosting.json` 可解析。
+- 佛斯特結構化診斷：`node scripts/diagnose-foster-combined.mjs '../佛斯特_修正拆料表(1).xlsx'` → 61/61；仍不得稱正式 AI 辨識率。
+- `npm test` 與原 Linux 包裝指令依賴 bash；Windows 本機沒有 bash，故採上述等價命令。
+- `npx tsc --noEmit` 仍有 6 個既存型別問題（Cloudflare 型別、PDF proxy、舊路由型別等）；Vinext production build 與完整測試均成功，但此技術債尚未清除。
 
 ## 仍待完成
 
-- 正式站登入需由實際可操作的登入瀏覽器重驗；目前平台資料與日誌只證明專案、owner-only存取和部分已識別請求正常，不能宣稱先前Google 502已消失。
-- 找不到2026-09-11正式測試run ledger，因此今日使用次數仍標記「不明」，不可假設0次。
-- 新修正版尚未保存為Sites版本或部署；正式AI完整原圖F1及90%複驗仍未完成。
+- 依正式收據流程在原網站重新上傳兩張完整佛斯特原圖並下載 Excel，取得可追溯的正式 AI F1；Asia/Taipei 每日最多兩次，帳本不明不可假設為 0。
+- F1 首次達 90% 後仍需再複驗一次才算完成。目前不可宣布正式 AI 辨識達標。
+- 填縫規則仍未由使用者確認；不可把舊程式 100mm 預設提升為通則。
+- 固格斜把本輪刻意不動；若要啟用，需另行確認其圖面證據、退縮與擋板規則並新增測試。
+- 假門板專用類型、非等寬中立兩側活格、R67 抽牆高文字與 helper 級距衝突仍需後續稽核。
+- 若未來要保存案件、原圖、料單或歷史紀錄，先確認身分、資料模型、保存期限與授權，再設計 D1（結構化資料）及 R2（原檔）。不可直接把 `examples/d1` 的 notes 範例上線。
 
-## 原則與歷史規則
+## 接手原則
 
-圖面常為cm，料單mm，標準板18/背板8；基本頂底D×(W−36)、背板(W−26)×(H−26)、固格深D−29；實際有中立、中心線、檯面、斜把、特殊板厚時依已確認結構與現行SOP，不無條件套基本式。滑軌以組（兩支）計，最大500mm。24mm是間隙/抬高/尺寸鏈哪一種必須先辨識，不能重扣。背條在多版SOP與記憶有不同門檻，接手不可用摘要覆蓋程式；需逐案追正解來源。
+1. 先讀 `START_HERE.md`、`AGENTS.md`、本檔、`project-docs/RULES.md`、`project-docs/FORMULAS.md` 與 `cabinet-ai-demo/docs/research-log.md`。
+2. 以目前程式、測試與最新使用者明確要求為準；歷史 SOP 與研究材料只作來源，不可覆蓋新規則。
+3. 任何公式或辨識修改先跑離線測試；名稱含 `live` 的腳本可能呼叫付費 AI，不得當一般測試執行。
+4. 沿用同一 Sites project_id、owner-only 權限與秘密；不擷取或搬移明文金鑰。
+5. 未取得正式原圖收據、網站版本、輸出 Excel 與 exact-match 報告前，不得用離線 61/61 宣布 AI 90%。
 
-本包的研究材料保留官方文件/原始專案來源連結於原文，不代表每個推薦方案採用。不得用歷史助理「完成」敘述取代可重現證據。
+原移轉來源 SHA `c82259de56af62a72e55ff2b920abfe456dba648` 保留在 `SOURCE_VERSION.txt` 作歷史基準；目前正式版本見 `CURRENT_VERSION.txt`。

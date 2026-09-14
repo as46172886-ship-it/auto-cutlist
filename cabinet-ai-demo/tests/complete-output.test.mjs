@@ -97,6 +97,7 @@ test("reliable color-marker evidence cross-checks but never changes slanted-hand
   const result = calculateCompleteSop({
     slantedHandleMarkerEvidence: { count: 3, reliable: true, sourceImageName: "彩色門面" },
     cabinets: [cabinet({
+      drawerCount: 2,
       drawerGroups: [{ id: "DG1", count: 2, openingWidthMm: 460, openingHeightMm: 201, drawerWallHeightMm: 120, isInner: false, sideBySide: false, usesCenterlineWidth: false, centerlineBoundaryCount: 0, slantedHandle: true, fixedShelfPositionMm: 0, evidence: "圖註下斜把" }],
     })],
   });
@@ -178,7 +179,7 @@ test("complete mode merges within an elevation but preserves identical rows acro
   assert.equal(result.hardware.some((row) => "groupId" in row), false);
 });
 
-test("complete mode never emits slanted-handle hardware without its finished door or drawer front", () => {
+test("complete mode never emits slanted-handle hardware without its finished door", () => {
   const unresolvedDoor = {
     type: "4E", count: 1, countBasis: "symbols", doorSymbols: [">"],
     openingWidthMm: 0, openingHeightMm: 0, finishedWidthMm: 0, finishedHeightMm: 0,
@@ -190,12 +191,41 @@ test("complete mode never emits slanted-handle hardware without its finished doo
   const result = calculateCompleteSop({
     cabinets: [cabinet({
       doors: [unresolvedDoor],
-      drawerCount: 1,
-      drawerGroups: [{ id: "DG-X", count: 1, openingWidthMm: 0, openingHeightMm: 0, slantedHandle: true, evidence: "屜頭尺寸未讀到" }],
     })],
   });
-  assert.equal(result.materials.some((row) => row.item === "4E門板" || row.item === "屜頭"), false);
+  assert.equal(result.materials.some((row) => row.item === "4E門板"), false);
   assert.equal(result.hardware.some((row) => row.item === "斜手把"), false);
+});
+
+test("complete mode blocks a cut list when declared drawers cannot all produce drawer fronts", () => {
+  assert.throws(
+    () => calculateCompleteSop({
+      cabinets: [cabinet({
+        drawerCount: 2,
+        drawerGroups: [{ id: "DG-X", count: 2, openingWidthMm: 460, openingHeightMm: 0, slantedHandle: false, evidence: "屜頭高度未讀到" }],
+      })],
+    }),
+    (error) => error?.code === "drawer_front_incomplete"
+      && error?.status === 422
+      && /C01.*抽屜2.*可產生屜頭0片/.test(error.message),
+  );
+});
+
+test("every declared drawer closes to exactly one finished drawer front", () => {
+  const completeGroup = {
+    drawerWallHeightMm: 0, isInner: false, sideBySide: false, usesCenterlineWidth: false,
+    centerlineBoundaryCount: 0, slantedHandle: false, fixedShelfPositionMm: 0, evidence: "圖面完成屜頭",
+  };
+  const result = calculateCompleteSop({
+    cabinets: [cabinet({
+      drawerCount: 3,
+      drawerGroups: [
+        { ...completeGroup, id: "DG-A", count: 2, openingWidthMm: 460, openingHeightMm: 201 },
+        { ...completeGroup, id: "DG-B", count: 1, openingWidthMm: 920, openingHeightMm: 180 },
+      ],
+    })],
+  });
+  assert.equal(result.materials.filter((row) => row.item === "屜頭").reduce((sum, row) => sum + row.qty, 0), 3);
 });
 
 test("an impossible J-handle count is blocked from production hardware", () => {

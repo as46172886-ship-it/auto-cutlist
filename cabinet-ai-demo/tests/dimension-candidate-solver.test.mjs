@@ -108,6 +108,76 @@ test("vector PDF candidates keep axis association and repeated D values fill mis
   assert.match(reconciled.audit.repairs.join("\n"), /深度426mm補足桶序 2、3/);
 });
 
+const quietOrientation = { images: [{ ...orientation.images[0], sideVerticalDimensionTexts: [] }] };
+const heightDocument = (textRuns, axisLines, imageName = "height.pdf#第1頁") => [{
+  imageName,
+  sourceKind: "vector_pdf",
+  extractor: "pdfjs_text_and_paths",
+  pageWidth: 1000,
+  pageHeight: 800,
+  extractedText: textRuns.map((item) => item.text).join(" "),
+  textRuns,
+  axisLines,
+  vectorPathCount: axisLines.length,
+}];
+
+test("parallel vertical dimension lines never form a mixed height chain", () => {
+  const documentEvidence = heightDocument([
+    { text: "55.2", x: 92, y: 130, width: 10, height: 10, rotationDeg: 90 },
+    { text: "16", x: 92, y: 245, width: 10, height: 10, rotationDeg: 90 },
+    { text: "2.4", x: 122, y: 190, width: 10, height: 10, rotationDeg: 90 },
+  ], [
+    { x1: 100, y1: 100, x2: 100, y2: 220, axis: "vertical", length: 120 },
+    { x1: 100, y1: 220, x2: 100, y2: 300, axis: "vertical", length: 80 },
+    { x1: 130, y1: 150, x2: 130, y2: 240, axis: "vertical", length: 90 },
+  ]);
+  const reconciled = reconcileCarcassCandidates(base, quietOrientation, documentEvidence);
+  assert.equal(reconciled.observations.cabinets[0].heightMode, "explicit_total");
+  assert.equal(reconciled.audit.closuresAccepted, 0);
+});
+
+test("an explicit total is not expanded by an adjacent same-line segment", () => {
+  const input = structuredClone(base);
+  input.cabinets[0].heightTotal = cm("147.2", 147.2);
+  const documentEvidence = heightDocument([
+    { text: "147.2", x: 92, y: 130, width: 10, height: 10, rotationDeg: 90 },
+    { text: "8.8", x: 92, y: 230, width: 10, height: 10, rotationDeg: 90 },
+  ], [{ x1: 100, y1: 100, x2: 100, y2: 280, axis: "vertical", length: 180 }]);
+  const reconciled = reconcileCarcassCandidates(input, quietOrientation, documentEvidence);
+  assert.equal(reconciled.observations.cabinets[0].heightMode, "explicit_total");
+  assert.equal(reconciled.observations.cabinets[0].heightTotal.rawText, "147.2");
+  assert.equal(reconciled.audit.closuresAccepted, 0);
+});
+
+test("nested or overlapping collinear spans never form a height chain", () => {
+  const documentEvidence = heightDocument([
+    { text: "55.2", x: 92, y: 115, width: 10, height: 10, rotationDeg: 90 },
+    { text: "18.4", x: 92, y: 195, width: 10, height: 10, rotationDeg: 90 },
+  ], [
+    { x1: 100, y1: 100, x2: 100, y2: 300, axis: "vertical", length: 200 },
+    { x1: 100, y1: 160, x2: 100, y2: 240, axis: "vertical", length: 80 },
+  ]);
+  const reconciled = reconcileCarcassCandidates(base, quietOrientation, documentEvidence);
+  assert.equal(reconciled.observations.cabinets[0].heightMode, "explicit_total");
+  assert.equal(reconciled.audit.closuresAccepted, 0);
+});
+
+test("endpoint-adjacent collinear spans may form one legal height chain", () => {
+  const documentEvidence = heightDocument([
+    { text: "55.2", x: 92, y: 130, width: 10, height: 10, rotationDeg: 90 },
+    { text: "2.4", x: 92, y: 185, width: 10, height: 10, rotationDeg: 90 },
+    { text: "16", x: 92, y: 225, width: 10, height: 10, rotationDeg: 90 },
+  ], [
+    { x1: 100, y1: 100, x2: 100, y2: 180, axis: "vertical", length: 80 },
+    { x1: 100, y1: 180, x2: 100, y2: 200, axis: "vertical", length: 20 },
+    { x1: 100, y1: 200, x2: 100, y2: 260, axis: "vertical", length: 60 },
+  ]);
+  const reconciled = reconcileCarcassCandidates(base, quietOrientation, documentEvidence);
+  assert.equal(reconciled.observations.cabinets[0].heightMode, "segment_chain");
+  assert.deepEqual(reconciled.observations.cabinets[0].heightSegments.map((item) => item.rawText), ["55.2", "2.4", "16"]);
+  assert.equal(reconciled.audit.closuresAccepted, 1);
+});
+
 test("conflicting PDF depths are reported and never merged", () => {
   const documentEvidence = [{
     imageName: "mixed.pdf#第1頁", sourceKind: "vector_pdf", extractor: "pdfjs_text_and_paths",

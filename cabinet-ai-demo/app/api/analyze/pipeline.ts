@@ -110,7 +110,7 @@ export const DIMENSION_INSTRUCTIONS = `你是第一階段「尺寸證據抄錄�
 9. 複合文字如「鏡子35*130」要拆成350mm寬與1300mm高兩筆note尺寸，保留同一文字證據。
 10. 不清楚的數字可標unknown，但必須說明它在圖上的位置；禁止杜撰未出現的數字。
 11. 圖面若以cm標示，例39.4必須輸出394mm；若原圖已是mm則不乘10。
-12. 同時追蹤側板線是否從桶底連續到桶頂。連續側板內的水平門縫、斜把縫或內部橫板不是獨立桶身邊界；把這項觀察寫入imageViews.notes與相關尺寸evidence。
+12. 同時追蹤側板線是否從桶底連續到桶頂。連續側板內的水平門縫、斜把縫或內部水平板線不是獨立桶身邊界；把這項觀察寫入imageViews.notes與相關尺寸evidence。
 13. 純數字「門N」（例如門509）是普通4E門的名義門寬標記：本階段保留在note，不放進dimensions；後端會固定算完成門寬=N-2。含英文字母的「門A12」才是門型／門號，不得當mm。只有真正有起終點的尺寸線才進dimensions。
 
 軸向防錯範例：旋正後，圖底部水平鏈40／80／60只能是400／800／600寬；圖側垂直鏈55.2／2.4／16只能是552／24／160高或間隙。若三段同方向、首尾相接且跨滿左側矮櫃，必須相加得到桶高736mm；絕不可把736mm當寬度。右側外總高227.2且兩側板線上下連續時，163.1／2.4／61.7是同一個2272mm高桶身的內部分段，不得拆成上下兩桶。
@@ -130,7 +130,7 @@ export const STRUCTURE_INSTRUCTIONS = `你是第二階段「系統櫃結構判�
    - 左右側板線若由桶底連續到桶頂，必須只建立一個cabinet；只有獨立頂底板、側板中斷、深度分離或明寫疊櫃才可拆成上下兩個cabinet。單一水平分隔線、門縫或斜把縫絕對不足。
 3. 封板、鏡面、踢腳板等放到各自陣列，絕不能為了填資料把它們建立成 cabinet。
 4. 把尺寸證據表的 depthGroup 綁到櫃體。相同群組只要有一個明確共用深度，就套給整群並在 depthEvidence 說明來源；不得因每桶旁邊沒重複標深度而填0。
-5. 逐桶判門片、層板、抽屜、中立、斜把相關橫板、擋板與腳；所有會影響加工的原圖文字（F高度、上18下18、缺口、下起開、4P、J把、斜把等）逐字抄入drawingNotes。先判斷元件是否存在：原圖明確沒有或該結構不適用時，對應陣列留空、計數填0、狀態填absent／not_applicable，不得提出問題或提醒；只有已有圖面證據證明元件存在、但數量或尺寸讀不清時，才保留待確認並提出一個合併後的阻擋問題。
+5. 逐桶判門片、層板、抽屜、中立、實際頂板／底板／固格、擋板與腳；所有會影響加工的原圖文字（F高度、上18下18、缺口、下起開、4P、J把、斜把等）逐字抄入drawingNotes。先判斷元件是否存在：原圖明確沒有或該結構不適用時，對應陣列留空、計數填0、狀態填absent／not_applicable，不得提出問題或提醒；只有已有圖面證據證明元件存在、但數量或尺寸讀不清時，才保留待確認並提出一個合併後的阻擋問題。
 6. 最後驗算每條尺寸鏈。總寬是總寬，不能建立成一個1800或2272寬的桶身。重疊的上櫃／下櫃必須放不同 widthChainId，不能相加。
 7. questions只放「不回答就不能安全拆料」的問題，合併同類問題但不可因題數上限省略任何未確認項；warnings只放不阻擋的提醒。
    - projectName必須用圖面上的案件名稱；沒有名稱就填「本次圖面」，禁止把檔名UUID、隨機碼或圖片編號當案件名稱。
@@ -144,7 +144,7 @@ export const STRUCTURE_INSTRUCTIONS = `你是第二階段「系統櫃結構判�
 - door.openingWidthMm／openingHeightMm 是整個開口尺寸；dimensionBasis=opening時後端才依SOP計算。finishedWidthMm／finishedHeightMm 必須是「單片」已完成門面尺寸，dimensionBasis=finished時後端不再扣3、4、24或30。
    - 門片數與開向只能沿用第一優先像素複核的鎖定結果。只有位於門面葉片區的清楚<／>可成立symbols；禁止用leaf_geometry、寬度、對稱或AI經驗補門片。未鎖定門板保持空陣列並提醒，不得在結構階段補猜。尺寸、24mm脈絡、J把與斜把是另一條資料線：可依尺寸證據補入，但任何不確定都不得清除已鎖定的<／>。
 - 每一組4E門必須填slantedGap24Context：24包含在同一門高鏈才是door_chain_included且後端扣一次；已是獨立分段填already_separate；疊櫃抬門填stacked_lift；確定無關填none；讀不清才填unknown並列非阻擋提醒。只要本階段依圖面證據判定為door_chain_included／already_separate／stacked_lift，後端立即鎖定，後續複核不得推翻或重複扣24；只有使用者明確更正24mm、2.4、斜把或門縫時才可重判。includesSlantedGap24只在door_chain_included時為true。
-- topBoardRetreatMm、bottomBoardRetreatMm 只能填0或有證據的19；只有斜把實際由該板形成時填19。slantedFixedShelfCount只計真正需用D-48的固格。
+- 本階段只建立桶身與內裝基準：topBoardRetreatMm=0、bottomBoardRetreatMm=0、slantedFixedShelfCount=0、baffles=[]。門與屜頭完成最後獨立掃描後，才可按各自斜把證據回算實際頂板／底板退縮與擋板；本次不改固格尺寸。
 - fixedShelves逐片計數；所有看得清楚的F中心線高度以mm填入fixedShelfPositionsMm。F是含頂底量到固格中心線，不得扣成板邊。
 - drawerGroup.centerlineBoundaryCount填0／1／2，表示抽屜格有幾側尺寸到中立中心線；usesCenterlineWidth必須與其是否大於0一致。後端會依此固定套-99／-90／-81，內抽再-50。regionPosition填top／middle／bottom／unknown；圖面明確是上方並排抽時必須填top，讓後端可用H與F中心線補出只在上方抽屜區的中立。
 - middleDividers不能因看見並排抽就延伸到下方門區。一般深度填depthBasis=standard_d_minus_29；若圖上直接給完成深度才填finished。高度若由上下接點與跨度計算，填heightBasis=connection_span及referenceSpanMm，後端依完整板18／固格中心線9計算；只有圖面直接給完成高才填finished。資料不足填unknown並提問，禁止直接套H-36。
@@ -180,7 +180,7 @@ E. 獨立件：封板、鏡子、門板、踢腳板與局部板件不得留在 c
 F. 斜把：只把真正形成斜把空間的頂板、底板或固格標 retreat19；擋板50／60及中立分段必須有圖面依據。
 F2. 板厚與鎖定：24mm若在門面垂直鏈中且第一階段分類slanted_handle_gap，只能是斜把縫，絕不可稱為24mm厚板；除非原圖明寫T24或板厚24。第二階段已判定的24mm脈絡是鎖定值，本階段只能驗證計算是否只套一次，不得改回unknown或換成另一種扣法。
 G. 門與抽屜：完成門面高不可再扣4；24縫不可重扣；抽屜中心線邊界0／1／2必須分別套-99／-90／-81；中立只做到實際分隔區，深度一般D-29，高度依完整板18／固格中心線9逐端扣除；鋁框門不列但桶身保留。
-G2. 固格與註記：固格一律核對D-29×W-36，斜把相關固格才D-48；F中心線高度、上18下18、缺口、下起開、4P、J把與斜把註記不得在驗算時消失。
+G2. 固格與註記：本次自動流程的固格一律核對D-29×W-36，不由門面影像改成D-48；F中心線高度、上18下18、缺口、下起開、4P、J把與斜把註記不得在驗算時消失。
 H. 問題：已能從證據表、尺寸鏈或同群櫃體推得的資料不得再問；合併重複問題，但所有真正阻擋問題都必須保留，不能因題數上限省略。
 
 完整正式SOP如下：
@@ -191,7 +191,7 @@ const INTERIOR_INSTRUCTIONS = `你是第三階段「桶身內部逐件複核員�
 每個桶身都必須逐項檢查：
 1. 圖上的每個「抽」或抽屜符號都要計入drawerCount，並建立對應drawerGroups；group.count總和必須等於drawerCount，isInner群組數量總和必須等於innerDrawerCount。辨識到群組卻未知數量時不可填0當作沒有，必須阻擋。
 2. drawerGroup.openingWidthMm是該抽屜格的實際格寬，不是整個立面總寬；openingHeightMm固定記錄「完成屜頭／抽面高度」。drawerWallHeightMm固定填0，後端依正式級距自動改寫：完成屜頭高≤200mm用100mm抽牆，>200mm用180mm抽牆。讀不到完成屜頭高時只問屜頭高，禁止另問抽牆高，也禁止把屜頭高直接當抽牆高。centerlineBoundaryCount必須逐組填0／1／2，對應後端-99／-90／-81；內抽後端再-50。
-3. 同一桶內若抽屜區與門區之間有實際橫板，必須計入fixedShelves；形成斜把空間的那一片才計入slantedFixedShelfCount並使用D-48。不可因不知道固格位置就把整個fixedShelves歸零。可讀到的每個F中心線高度都填入fixedShelfPositionsMm。
+3. 同一桶內若抽屜區與門區之間有實際固格板，必須計入fixedShelves；本次自動流程slantedFixedShelfCount固定為0，固格仍使用D-29。不可因不知道固格位置就把整個fixedShelves歸零。可讀到的每個F中心線高度都填入fixedShelfPositionsMm。
 4. 逐片數清fixedShelves、adjustableShelves；F中心線、固格或固定層板的肯定標記才是固格。立面已看見實體水平層板而沒有上述固定證據時，依R24直接判活動層板，不再保留固格／活格問題。固格固定D-29×W-36、現行活格固定D-40×W-37；D-44已停用。所有看得見的板線都必須判斷是門縫還是桶內板。<／>斜向門片標記可以畫在桶內板線上方，但它只是覆蓋標記：不得因此把同區已畫出的水平層板改成unknown、門區或刪除。若中立板把同一桶分成左右兩格，須逐格數每一道水平板；同高板線若在中立兩側都存在，固定算左右各1片。活格必須依每個實際開口分格計尺寸與片數，不能仍列一片跨過中立的全寬活格。
 5. 並排抽屜必須有middleDividers，且並排N列固定需要N-1片完整中立，只做到實際抽屜分隔區。一般中立深度填depthBasis=standard_d_minus_29；高度以referenceSpanMm及上下接點交由後端扣完整板18／中心線9。只有原圖直接給完成尺寸才用finished；資料不全用unknown並提問，禁止套H-36。下方大門區不得延伸中立。
    - 每個drawerGroup另填regionPosition；明確在上方且下接F固格中心線時填top與fixedShelfPositionMm。若H與F已確認，後端會用上方跨度H−F自動建立缺少的N−1片中立，禁止再問使用者已可由圖面算出的中立數量或高度。

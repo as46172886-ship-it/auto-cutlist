@@ -49,9 +49,10 @@ test("locked full-width drawers produce all boards and retire only resolved widt
   assert.equal(analysis.cabinets[0].drawerGroups[0].openingWidthMm, 400);
   assert.deepEqual(analysis.questions, raw.questions.slice(1));
   const result = calculateNonDoorSop(analysis);
-  for (const [item, spec, qty] of [["前抽牆", "100 × 301", 4], ["邊抽牆", "100 × 350", 4], ["抽底板", "311 × 324", 2], ["屜頭", "397 × 160", 2]]) {
+  for (const [item, spec, qty] of [["前抽牆", "100 × 301", 4], ["邊抽牆", "100 × 350", 4], ["抽底板", "311 × 324", 2]]) {
     assert.equal(result.materials.find((row) => row.item === item && row.spec === spec)?.qty, qty, item);
   }
+  assert.equal(result.materials.some((row) => row.item === "屜頭"), false);
   assert.equal(result.materials.some((row) => row.item === "擋板"), false);
 });
 
@@ -82,12 +83,11 @@ test("YCX non-door fixture matches every deterministic material and hardware row
   assert.deepEqual(result.materials.map((row) => `${row.item}|${row.spec}|${row.qty}`).sort(), [
     "側板|426 × 2272|2", "側板|426 × 736|4",
     "頂底板|426 × 764|2", "頂底板|426 × 564|2", "頂底板|426 × 364|2",
-    "中立板|397 × 133|1", "固格板|378 × 764|1", "固格板|378 × 564|1",
+    "中立板|397 × 133|1", "固格板|397 × 764|1", "固格板|397 × 564|1",
     "活格板|386 × 763|1", "活格板|386 × 563|2", "活格板|386 × 363|1",
     "前抽牆|100 × 310|4", "前抽牆|100 × 301|2", "邊抽牆|100 × 350|6",
-    "抽底板|320 × 324|2", "抽底板|311 × 324|1", "屜頭|397 × 160|3",
+    "抽底板|320 × 324|2", "抽底板|311 × 324|1",
     "封板|180 × 1100|1", "假門板|120 × 636|1",
-    "擋板|60 × 764|1", "擋板|60 × 564|1", "擋板|60 × 364|1",
     "背板|774 × 710|1", "背板|574 × 2246|1", "背板|374 × 710|1",
     "踢腳板|120 × 2800|1", "檯面|450 × 1200|1", "背條|110 × 564|2", "明鏡|350 × 1300|1",
   ].sort());
@@ -96,7 +96,7 @@ test("YCX non-door fixture matches every deterministic material and hardware row
   ].sort());
   assert.equal(result.materials.some((row) => row.item === "4E門板"), false);
   assert.equal(result.hardware.some((row) => /鉸鍊|油壓器|J.*手把|斜手把/.test(row.item)), false);
-  assert.match(result.materials.find((row) => row.item === "屜頭").note, /長斜把.*完整模式另列斜手把五金/);
+  assert.equal(result.materials.some((row) => row.item === "屜頭" || row.item === "擋板"), false);
 });
 
 test("project names never retrieve or overwrite a labelled answer", () => {
@@ -178,7 +178,7 @@ test("non-door recognition completion restores drawer compartments, short divide
   const normalized = normalizeNonDoorAnalysis({ cabinets: [c01, c02, c03], dimensionChains: [], specialHardware: [{ item: "伸縮衣架", qty: 1, unit: "支", evidence: "圖註" }] }, plan);
   assert.deepEqual(normalized.cabinets.map((item) => [item.fixedShelves, item.adjustableShelves]), [[0, 1], [1, 1], [1, 2]]);
   assert.equal(normalized.cabinets[1].middleDividers[0].referenceSpanMm, 160);
-  assert.deepEqual(normalized.cabinets.map((item) => item.baffles.length), [1, 1, 1]);
+  assert.deepEqual(normalized.cabinets.map((item) => item.baffles.length), [0, 0, 0]);
   assert.equal(normalized.specialHardware[0].item, "35伸縮衣桿");
 });
 
@@ -250,7 +250,7 @@ test("three side-by-side drawer columns create two short dividers when none were
   assert.equal(new Set(normalized.cabinets[0].middleDividers.map((divider) => divider.region)).size, 2);
 });
 
-test("slanted drawer completion preserves every explicitly segmented baffle", () => {
+test("carcass normalization clears pre-existing face-derived baffles", () => {
   const plan = {
     projectName: "分段擋板", drawingUnit: "mm", views: [], unresolved: [],
     cabinets: [{ cabinetId: "C01", elevationId: "E01", label: "雙抽櫃", widthOrder: 1, bottomSegmentMm: 800, bottomDimensionText: "800", sourceCrops: [], confidence: "high", evidence: "單桶寬800" }],
@@ -269,7 +269,7 @@ test("slanted drawer completion preserves every explicitly segmented baffle", ()
       baffles: segments,
     })],
   }, plan);
-  assert.deepEqual(normalized.cabinets[0].baffles, segments);
+  assert.deepEqual(normalized.cabinets[0].baffles, []);
 });
 
 test("each vertical drawer group calculates its own side-by-side opening width", () => {
@@ -432,7 +432,7 @@ test("same-height filler evidence remains separated by elevation", () => {
   ]);
 });
 
-test("a 24mm carcass height segment marks drawer groups as slanted before deterministic baffle calculation", () => {
+test("a 24mm carcass height segment does not mark a drawer front as slanted", () => {
   const plan = {
     projectName: "斜把高度鏈", drawingUnit: "cm", views: [], unresolved: [],
     cabinets: [{ cabinetId: "C01", elevationId: "E01", label: "第1桶", widthOrder: 1, bottomSegmentMm: 400, bottomDimensionText: "40", sourceCrops: [], confidence: "high", evidence: "底寬" }],
@@ -442,8 +442,8 @@ test("a 24mm carcass height segment marks drawer groups as slanted before determ
     cabinets: [source],
     carcassDimensionLocks: [{ cabinetId: "C01", heightRawTexts: ["55.2", "2.4", "16"] }],
   }, plan);
-  assert.equal(normalized.cabinets[0].drawerGroups[0].slantedHandle, true);
-  assert.equal(normalized.cabinets[0].baffles.length, 1);
+  assert.equal(normalized.cabinets[0].drawerGroups[0].slantedHandle, false);
+  assert.equal(normalized.cabinets[0].baffles.length, 0);
 });
 
 test("24mm chains and slanted drawer patterns never propagate across elevations", () => {
@@ -460,14 +460,14 @@ test("24mm chains and slanted drawer patterns never propagate across elevations"
     cabinet("E02-C01", 1, 500, 736, { elevationId: "E02", drawerCount: 1, drawerGroups: [plainDrawer("D2", false)], baffles: [] }),
   ];
   const patternOnly = normalizeNonDoorAnalysis({ cabinets: rawCabinets }, plan);
-  assert.deepEqual(patternOnly.cabinets.map((item) => item.baffles.length), [1, 0]);
+  assert.deepEqual(patternOnly.cabinets.map((item) => item.baffles.length), [0, 0]);
 
   rawCabinets[0].drawerGroups[0].slantedHandle = false;
   const chainOwned = normalizeNonDoorAnalysis({
     cabinets: rawCabinets,
     dimensionChains: [{ id: "H-E01", elevationId: "E01", axis: "height", segmentsMm: [552, 24, 160], cabinetIds: [] }],
   }, plan);
-  assert.deepEqual(chainOwned.cabinets.map((item) => [item.drawerGroups[0].slantedHandle, item.baffles.length]), [[true, 1], [false, 0]]);
+  assert.deepEqual(chainOwned.cabinets.map((item) => [item.drawerGroups[0].slantedHandle, item.baffles.length]), [[false, 0], [false, 0]]);
 
   const unowned = normalizeNonDoorAnalysis({
     cabinets: rawCabinets,
@@ -487,7 +487,7 @@ test("slanted evidence never propagates between cabinets in the same elevation",
     cabinet("C02", 2, 500, 736, { drawerCount: 1, drawerGroups: [plainDrawer("D2", false)], baffles: [] }),
   ];
   const patternOnly = normalizeNonDoorAnalysis({ cabinets }, plan);
-  assert.deepEqual(patternOnly.cabinets.map((item) => [item.drawerGroups[0].slantedHandle, item.baffles.length]), [[true, 1], [false, 0]]);
+  assert.deepEqual(patternOnly.cabinets.map((item) => [item.drawerGroups[0].slantedHandle, item.baffles.length]), [[false, 0], [false, 0]]);
 
   cabinets[0].drawerGroups[0].slantedHandle = false;
   const unownedChain = normalizeNonDoorAnalysis({
@@ -500,7 +500,7 @@ test("slanted evidence never propagates between cabinets in the same elevation",
     cabinets,
     dimensionChains: [{ id: "H-C01", elevationId: "E01", axis: "height", segmentsMm: [552, 24, 160], cabinetIds: ["C01"] }],
   }, plan);
-  assert.deepEqual(ownedChain.cabinets.map((item) => [item.drawerGroups[0].slantedHandle, item.baffles.length]), [[true, 1], [false, 0]]);
+  assert.deepEqual(ownedChain.cabinets.map((item) => [item.drawerGroups[0].slantedHandle, item.baffles.length]), [[false, 0], [false, 0]]);
 });
 
 test("a wardrobe rod only completes the tall cabinet zone in its own elevation", () => {
@@ -519,7 +519,7 @@ test("a wardrobe rod only completes the tall cabinet zone in its own elevation",
     specialHardware: [{ elevationId: "E01", item: "35伸縮衣桿", qty: 1, unit: "支", evidence: "第一立面圖註" }],
   }, plan);
   assert.deepEqual(normalized.cabinets.map((item) => [item.adjustableShelves, item.fixedShelves, item.baffles.length]), [
-    [2, 1, 1], [3, 0, 0],
+    [2, 1, 0], [3, 0, 0],
   ]);
 });
 

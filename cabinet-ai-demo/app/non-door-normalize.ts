@@ -24,23 +24,6 @@ function records(value: unknown) {
   return (Array.isArray(value) ? value : []).map(asRecord).filter(Boolean) as JsonRecord[];
 }
 
-function heightChainHasSlantedGap(raw: JsonRecord, cabinetId: string, elevationId: string, multiElevation: boolean, soleCabinetInElevation: boolean) {
-  const legacyChain = records(raw.dimensionChains).some((chain) => {
-    const ids = Array.isArray(chain.cabinetIds) ? chain.cabinetIds.map(String) : [];
-    const segments = Array.isArray(chain.segmentsMm) ? chain.segmentsMm.map(rounded) : [];
-    const chainElevation = String(chain.elevationId || "");
-    const applies = ids.includes(cabinetId)
-      || (!ids.length && soleCabinetInElevation && (!multiElevation || chainElevation === elevationId));
-    return chain.axis === "height" && applies && segments.includes(24);
-  });
-  if (legacyChain) return true;
-  return records(raw.carcassDimensionLocks).some((lock) => {
-    if (String(lock.cabinetId || "") !== cabinetId) return false;
-    const rawTexts = Array.isArray(lock.heightRawTexts) ? lock.heightRawTexts.map((item) => String(item).trim()) : [];
-    return rawTexts.some((text) => /^(?:2\.4\s*(?:cm)?|24\s*mm)$/i.test(text));
-  });
-}
-
 function normalizeSpecialHardware(item: JsonRecord) {
   const name = String(item.item || "").trim();
   if (/^(?:35)?伸縮衣(?:架|桿)$/.test(name)) return { ...item, item: "35伸縮衣桿", unit: String(item.unit || "支") || "支" };
@@ -205,8 +188,6 @@ export function normalizeNonDoorAnalysis(raw: JsonRecord, segmentation: Segmenta
     return present && elevationId ? [elevationId] : [];
   }));
   const sortedSegments = segmentation.cabinets.slice().sort(compareSegments);
-  const cabinetCountByElevation = new Map<string, number>();
-  for (const segment of sortedSegments) cabinetCountByElevation.set(segment.elevationId, (cabinetCountByElevation.get(segment.elevationId) || 0) + 1);
   const readForSegment = (items: JsonRecord[], segment: SegmentationPlan["cabinets"][number], legacyIndex: number) => {
     const exact = items.find((item) => String(item.id || "") === segment.cabinetId);
     if (exact) return exact;
@@ -237,6 +218,7 @@ export function normalizeNonDoorAnalysis(raw: JsonRecord, segmentation: Segmenta
       ...source, id: segment.cabinetId, name: String(source.name || segment.label || segment.cabinetId), elevationId: segment.elevationId,
       widthChainId: `LOCK-${segment.elevationId}`, widthOrder: segment.widthOrder, widthMm: Math.round(segment.bottomSegmentMm),
       boardProfile: normalizedBoardProfile(source.boardProfile), doors: [],
+      topBoardRetreatMm: 0, bottomBoardRetreatMm: 0, slantedFixedShelfCount: 0, baffles: [],
     } as unknown as CabinetRead;
     repairFullHeightMiddleDividers(cabinet);
     let groups = Array.isArray(cabinet.drawerGroups) ? cabinet.drawerGroups : [];
@@ -267,19 +249,13 @@ export function normalizeNonDoorAnalysis(raw: JsonRecord, segmentation: Segmenta
             : Math.round(rounded(cabinet.widthMm) / (groupSideBySide ? count : 1)),
           centerlineBoundaryCount: groupSideBySide ? Math.max(1, rounded(group.centerlineBoundaryCount)) : rounded(group.centerlineBoundaryCount),
           usesCenterlineWidth: groupSideBySide || Boolean(group.usesCenterlineWidth),
+          slantedHandle: false,
         };
       });
       cabinet.drawerGroups = groups;
     }
     const sideBySide = Boolean(cabinet.sideBySideDrawers) || groups.some((group) => Boolean(group.sideBySide) || (rounded(group.count) > 1 && rounded(group.centerlineBoundaryCount) > 0));
-    const hasGap24 = heightChainHasSlantedGap(raw, segment.cabinetId, segment.elevationId, elevationCount > 1, cabinetCountByElevation.get(segment.elevationId) === 1);
-    if (hasGap24 && groups.length) {
-      groups = groups.map((group) => ({ ...group, slantedHandle: true }));
-      cabinet.drawerGroups = groups;
-    }
     if (sideBySide && rounded(cabinet.fixedShelves) === 0) cabinet.fixedShelves = 1;
-    const slantedDrawer = groups.some((group) => Boolean(group.slantedHandle));
-    if (sideBySide && (hasGap24 || slantedDrawer)) cabinet.slantedFixedShelfCount = Math.max(1, rounded(cabinet.slantedFixedShelfCount));
 
     if (sideBySide) {
       const sideBySideGroups = groups.filter((group) => Boolean(group.sideBySide)
@@ -325,17 +301,6 @@ export function normalizeNonDoorAnalysis(raw: JsonRecord, segmentation: Segmenta
     const tallTwoZone = rounded(cabinet.heightMm) >= 1800 && hasWardrobeRod;
     if (tallTwoZone && hasWardrobeRod) cabinet.adjustableShelves = Math.max(2, rounded(cabinet.adjustableShelves));
     if (tallTwoZone && rounded(cabinet.fixedShelves) === 0) cabinet.fixedShelves = 1;
-    if (tallTwoZone) cabinet.slantedFixedShelfCount = Math.max(1, rounded(cabinet.slantedFixedShelfCount));
-
-    const needsStandardBaffle = slantedDrawer || tallTwoZone;
-    if (needsStandardBaffle && !(cabinet.baffles || []).length) {
-      cabinet.baffles = [{
-        id: `${segment.cabinetId}-B-AUTO`, heightMm: 60, widthMm: 0, kind: "drawer_60",
-        mountBasis: rounded(cabinet.fixedShelves) > 0 ? "fixed_shelf" : "raised_bottom", widthBasis: "cabinet_inner",
-        splitAtMiddleDivider: false, segmentGroupId: `${segment.cabinetId}-B-AUTO`, segmentIndex: 1, segmentCount: 1,
-        evidence: "24mm斜把空間／抽屜斜把已辨識；標準SOP每個需要開口一支60mm擋板",
-      }];
-    }
     const sharedFootHeight = sharedFootHeightByElevation.get(segment.elevationId) || 0;
     if (!cabinet.isHanging && cabinet.cabinetKind === "floor" && sharedFootHeight > 0 && (cabinet.footState !== "present" || rounded(cabinet.footHeightMm) === 0)) {
       cabinet.footState = "present";

@@ -503,7 +503,7 @@ export function findInteriorCompletenessErrors(structured: JsonRecord) {
   if (drawerSlideGaps.length) drawerDetails.push(`滑軌可用深度不足—${unique(drawerSlideGaps).join("、")}`);
   if (drawerSideBySideConflicts.length) drawerDetails.push(`並排抽註記矛盾—${unique(drawerSideBySideConflicts).join("、")}`);
   if (drawerDetails.length) errors.push(`[抽屜數量對照] 請一次補齊：${drawerDetails.join("；")}。每抽固定應有前後抽牆2片、邊抽牆2片、底板1片、滑軌1組；抽木榫D<500每抽12顆、D≥500每抽4顆；抽牆高度由完成屜頭高固定套級距：≤200mm用100mm、201–239mm用120mm、≥240mm用180mm，不另行猜問。`);
-  if (drawerShelfGaps.length) errors.push(`${unique(drawerShelfGaps).join("、")} 同一桶內有抽屜區與門區，但尚未確認兩區之間的實際固格；請一次確認是否有分隔橫板。`);
+  if (drawerShelfGaps.length) errors.push(`${unique(drawerShelfGaps).join("、")} 同一桶內有抽屜區與門區，但尚未確認兩區之間是否有實際固格板；請直接確認固格板，不使用籠統的橫板名稱。`);
   if (shelfClassificationGaps.length) errors.push(`[層板逐片對照] ${unique(shelfClassificationGaps).join("、")}；門片開向虛線只是覆蓋標記，不會讓後方已畫出的實體水平層板消失。請逐開口重看並明列每片固格或活格；若仍看不清，必須列為無法確認，不可直接少算。`);
   if (dividerGaps.length) errors.push(`${unique(dividerGaps).join("、")} 的中立板D扣數／完成深度基準、實際跨度或上下接點尚未完整；請一次確認，中立只做到實際分隔區，每片固定計4個固格器。`);
   if (dividerCountGaps.length) errors.push(`[中立數量對照] ${unique(dividerCountGaps).join("、")}；並排N列必須有N−1片完整中立，每片再計4個固格器，未知不能當0。`);

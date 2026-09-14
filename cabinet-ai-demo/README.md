@@ -1,8 +1,11 @@
-# vinext-starter
+# 系統櫃 AI 自動拆料
 
-A clean full-stack starter running on
-[vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and
-Drizzle support.
+這是目前正式網站的原始碼，使用 [vinext](https://github.com/cloudflare/vinext)
+建置。規則主檔位於 `app/sop-rules.ts`，公式與輸出邏輯位於 `app/sop.ts`，
+逐次研究與驗證紀錄位於 `docs/research-log.md`。
+
+目前 `.openai/hosting.json` 的 D1 與 R2 都是停用狀態；規則資料以版本控制的
+TypeScript 檔案為準，尚未建立案件保存資料表或雲端檔案庫。
 
 ## Prerequisites
 

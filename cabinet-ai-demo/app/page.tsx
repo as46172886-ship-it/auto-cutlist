@@ -31,7 +31,7 @@ type NonDoorPayload = {
     questions?: string[]; warnings?: string[];
   };
   result: { materials: MaterialRow[]; hardware: HardwareRow[]; notes: string[] };
-  scope: "all_except_doors" | "complete_including_doors";
+  scope: "carcass_before_faces" | "complete_including_doors";
   formulaMode: "deterministic";
   evidenceMode?: { vectorPdfPages: number; carcassDimensionLocks?: number; dimensionCandidates?: number; dimensionClosures?: number; dimensionConflicts?: number; enhancedOverviewImages: number; enhancedCabinetCrops: number; recognitionPasses: string };
 };
@@ -156,7 +156,7 @@ export default function Home() {
         segmentation: plan,
         cabinetCrops: [...structuralCrops as CabinetCropInput[], ...enhancedCrops],
       }, "非門構件掃描超過完整逐桶批次預算，已停止本次等待；請重試。", nonDoorClientTimeoutMs(plan.cabinets.length));
-      setBusyPhase("第4關：逐桶鎖定門板、開向、斜把與門五金");
+      setBusyPhase("第4關：門板與屜頭逐一判讀斜把，再套退縮、擋板與門五金");
       const doorCrops = selectDoorCropsForRequest(crops, 100);
       if (!doorCrops.length) throw new Error("未產生可用的門面裁切，無法完成含門料單。");
       const missingDoorCabinets = missingDoorSourceCabinetIds(doorCrops, plan.cabinets.map((cabinet) => cabinet.cabinetId));

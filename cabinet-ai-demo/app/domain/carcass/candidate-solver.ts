@@ -13,6 +13,10 @@ export type DimensionCandidate = {
   x: number;
   y: number;
   lineDistance: number;
+  lineKey: string | null;
+  lineIndex: number | null;
+  spanStart: number | null;
+  spanEnd: number | null;
 };
 
 export type DimensionCandidateAudit = {
@@ -60,16 +64,48 @@ function pointSegmentDistance(x: number, y: number, line: PdfLineEvidence) {
   return Math.hypot(x - (line.x1 + t * dx), y - (line.y1 + t * dy));
 }
 
-function nearestAxis(run: PdfTextRunEvidence, lines: PdfLineEvidence[]) {
+function nearestLineRelation(run: PdfTextRunEvidence, lines: PdfLineEvidence[]) {
   const x = run.x + run.width / 2;
   const y = run.y + run.height / 2;
-  const nearest = lines
-    .map((line) => ({ line, distance: pointSegmentDistance(x, y, line) }))
-    .sort((a, b) => a.distance - b.distance)[0];
   const rotation = ((Math.round(run.rotationDeg) % 180) + 180) % 180;
   const textAxis = rotation >= 45 && rotation <= 135 ? "vertical" : "horizontal";
-  if (!nearest || nearest.distance > 95) return { axis: textAxis as "horizontal" | "vertical", distance: 999 };
-  return { axis: nearest.line.axis, distance: Math.round(nearest.distance) };
+  const nearest = lines
+    .map((line, lineIndex) => {
+      const spanStart = line.axis === "vertical" ? Math.min(line.y1, line.y2) : Math.min(line.x1, line.x2);
+      const spanEnd = line.axis === "vertical" ? Math.max(line.y1, line.y2) : Math.max(line.x1, line.x2);
+      const projection = line.axis === "vertical" ? y : x;
+      return {
+        line,
+        lineIndex,
+        spanStart,
+        spanEnd,
+        containsProjection: projection >= spanStart && projection <= spanEnd,
+        distance: pointSegmentDistance(x, y, line),
+      };
+    })
+    .filter((item) => item.line.axis === textAxis)
+    .sort((a, b) => a.distance - b.distance
+      || Number(b.containsProjection) - Number(a.containsProjection)
+      || (a.spanEnd - a.spanStart) - (b.spanEnd - b.spanStart))[0];
+  if (!nearest || nearest.distance > 95) return {
+    axis: textAxis as "horizontal" | "vertical",
+    distance: 999,
+    lineKey: null,
+    lineIndex: null,
+    spanStart: null,
+    spanEnd: null,
+  };
+  const crossAxisCoordinate = nearest.line.axis === "vertical"
+    ? Math.round((nearest.line.x1 + nearest.line.x2) / 2)
+    : Math.round((nearest.line.y1 + nearest.line.y2) / 2);
+  return {
+    axis: nearest.line.axis,
+    distance: Math.round(nearest.distance),
+    lineKey: `${nearest.line.axis}:${crossAxisCoordinate}`,
+    lineIndex: nearest.lineIndex,
+    spanStart: nearest.spanStart,
+    spanEnd: nearest.spanEnd,
+  };
 }
 
 function textRunToCandidate(run: PdfTextRunEvidence, evidence: DocumentEvidence, drawingUnit: DrawingUnit): DimensionCandidate | null {
@@ -78,7 +114,7 @@ function textRunToCandidate(run: PdfTextRunEvidence, evidence: DocumentEvidence,
   const role = candidateRole(run.text);
   const valueMm = dimensionTextToMm(run.text, drawingUnit);
   if (!valueMm || valueMm > 10_000) return null;
-  const relation = nearestAxis(run, evidence.axisLines);
+  const relation = nearestLineRelation(run, evidence.axisLines);
   return {
     source: "pdf_vector",
     imageName: evidence.imageName,
@@ -89,6 +125,10 @@ function textRunToCandidate(run: PdfTextRunEvidence, evidence: DocumentEvidence,
     x: Math.round(run.x + run.width / 2),
     y: Math.round(run.y + run.height / 2),
     lineDistance: relation.distance,
+    lineKey: relation.lineKey,
+    lineIndex: relation.lineIndex,
+    spanStart: relation.spanStart,
+    spanEnd: relation.spanEnd,
   };
 }
 
@@ -111,6 +151,10 @@ function orientationCandidates(audit: OrientationAudit, drawingUnit: DrawingUnit
     x: 0,
     y: index,
     lineDistance: 999,
+    lineKey: null,
+    lineIndex: null,
+    spanStart: null,
+    spanEnd: null,
   }))).filter((item) => item.valueMm > 0);
 }
 
@@ -125,12 +169,27 @@ function groupBy<T, K>(values: T[], keyFor: (value: T) => K) {
   return grouped;
 }
 
+function hasCompatibleSpans(selected: DimensionCandidate[]) {
+  if (selected[0]?.source !== "pdf_vector") return true;
+  if (selected.some((item) => !item.lineKey || item.spanStart === null || item.spanEnd === null)) return false;
+  if (new Set(selected.map((item) => item.lineKey)).size !== 1) return false;
+  if (new Set(selected.map((item) => item.lineIndex)).size === 1) return true;
+  const spans = selected.map((item) => ({ start: item.spanStart!, end: item.spanEnd! })).sort((a, b) => a.start - b.start || a.end - b.end);
+  for (let index = 1; index < spans.length; index += 1) {
+    const previous = spans[index - 1];
+    const current = spans[index];
+    if (current.start < previous.end - 2 || Math.abs(current.start - previous.end) > 2) return false;
+  }
+  return true;
+}
+
 function contiguousChains(candidates: DimensionCandidate[], source: DimensionCandidate["source"], imageName: string, scoreBias: number) {
   const chains: HeightChain[] = [];
   for (let start = 0; start < candidates.length; start += 1) {
     for (let length = 2; length <= 4 && start + length <= candidates.length; length += 1) {
       const selected = candidates.slice(start, start + length);
       if (selected.some((item) => item.role !== "dimension" || item.valueMm <= 0)) continue;
+      if (!hasCompatibleSpans(selected)) continue;
       const total = selected.reduce((sum, item) => sum + item.valueMm, 0);
       if (total < 100 || total > 3_500) continue;
       chains.push({ source, imageName, valuesMm: selected.map((item) => item.valueMm), rawTexts: selected.map((item) => item.rawText), scoreBias });
@@ -141,18 +200,12 @@ function contiguousChains(candidates: DimensionCandidate[], source: DimensionCan
 
 function pdfHeightChains(candidates: DimensionCandidate[]) {
   const chains: HeightChain[] = [];
-  const byImage = groupBy(candidates.filter((item) => item.role === "dimension" && item.axis === "vertical"), (item) => item.imageName);
+  const byImage = groupBy(candidates.filter((item) => item.role === "dimension" && item.axis === "vertical" && item.lineKey), (item) => item.imageName);
   for (const [imageName, imageCandidates] of byImage) {
-    const ordered = imageCandidates.slice().sort((a, b) => a.x - b.x || a.y - b.y);
-    const columns: DimensionCandidate[][] = [];
-    for (const candidate of ordered) {
-      const column = columns.find((items) => Math.abs(items[0].x - candidate.x) <= 55);
-      if (column) column.push(candidate);
-      else columns.push([candidate]);
-    }
-    for (const column of columns) {
-      column.sort((a, b) => a.y - b.y);
-      chains.push(...contiguousChains(column, "pdf_vector", imageName, -0.025));
+    const byLine = groupBy(imageCandidates, (item) => item.lineKey!);
+    for (const lineCandidates of byLine.values()) {
+      lineCandidates.sort((a, b) => a.y - b.y);
+      chains.push(...contiguousChains(lineCandidates, "pdf_vector", imageName, -0.025));
     }
   }
   return chains;
@@ -168,6 +221,10 @@ function orientationHeightChains(candidates: DimensionCandidate[]) {
 function normalizedDistance(left: number[], right: number[]) {
   if (left.length !== right.length || !left.length) return Number.POSITIVE_INFINITY;
   return left.reduce((sum, value, index) => sum + Math.abs(value - right[index]) / Math.max(50, value, right[index]), 0) / left.length;
+}
+
+function relativeDifference(left: number, right: number) {
+  return Math.abs(left - right) / Math.max(left, right);
 }
 
 function chainKey(chain: HeightChain) {
@@ -216,10 +273,10 @@ function reconcileHeightChains(
 
     const observedTotal = measurementToMm(cabinet.heightTotal, observations.drawingUnit);
     if (!observedTotal) continue;
-    const ranked = chains.map((chain) => {
+    const ranked = chains.filter((chain) => !chain.valuesMm.some((value) => relativeDifference(value, observedTotal) <= 0.055)).map((chain) => {
       const total = chain.valuesMm.reduce((sum, value) => sum + value, 0);
       const containsGap24 = chain.valuesMm.includes(24);
-      const relative = Math.abs(total - observedTotal) / Math.max(total, observedTotal);
+      const relative = relativeDifference(total, observedTotal);
       const sourceBonus = chain.source === "pdf_vector" ? -0.02 : containsGap24 ? -0.012 : 0;
       return { chain, key: chainKey(chain), total, score: relative + chain.scoreBias + sourceBonus };
     });
