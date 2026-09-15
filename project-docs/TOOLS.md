@@ -24,7 +24,8 @@
 - `app/api/orient`：旋正證據；`segment`：分立面／桶身／裁切。
 - `app/api/carcass` 與 `app/domain/carcass`：早期基礎桶身模式；只算側／頂底／背，不等於使用者最新「含內部件」的完整桶身定義。
 - `app/api/non-door`、`app/non-door-normalize.ts`：內部結構與正規化。
-- `app/api/doors`、`app/door-recognition.ts`、`app/door-scan.ts`：末段門板辨識與證據鎖定。
+- `app/api/doors`、`app/final-door-stage.ts`：最後門面整批重讀、完整性驗證、完整候選立即採用與深複製安裝；不再用第一輪符號鎖覆蓋後輪尺寸。
+- `app/door-recognition.ts`、`app/door-scan.ts`：共用原圖／符號證據及裁切選擇；舊符號優先鎖函式保留相容，但正式最後門面路由不再使用。
 - `app/sop.ts`：基本／非門／完整三種計算入口；`drawer-rules.ts`、`hinge-rules.ts`、`quantity-rules.ts`：固定公式。
 - `app/sop-rules.ts`：提示與展示規則；與公式helper可能有歷史差異，見STATUS。
 - `app/xlsx-export.ts`：Excel輸出；`tests/`：離線回歸；`scripts/`：診斷與驗收。

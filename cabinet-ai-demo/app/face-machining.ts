@@ -178,6 +178,8 @@ function validateFaceRead(read: RecordValue, cabinet: CabinetRead, crops: Cabine
 export function prepareCarcassStage<T extends AnalysisForSop>(analysis: T): T {
   return { ...analysis, cabinets: analysis.cabinets.map((cabinet) => ({
     ...cabinet,
+    doors: [],
+    doorLock: undefined,
     topBoardRetreatMm: 0,
     bottomBoardRetreatMm: 0,
     slantedFixedShelfCount: 0,

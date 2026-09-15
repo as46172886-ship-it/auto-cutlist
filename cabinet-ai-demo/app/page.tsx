@@ -172,7 +172,7 @@ export default function Home() {
         segmentation: plan,
         cabinetCrops: [...structuralCrops as CabinetCropInput[], ...enhancedCrops],
       }, "非門構件掃描超過完整逐桶批次預算，已停止本次等待；請重試。", nonDoorClientTimeoutMs(plan.cabinets.length));
-      setBusyPhase("第4關：門板與屜頭逐一判讀斜把，再套退縮、擋板與門五金");
+      setBusyPhase("最後一關：完整確認門片寬高、開向與加工，再產生料單");
       const doorCrops = selectDoorCropsForRequest(crops, 100);
       if (!doorCrops.length) throw new Error("未產生可用的門面裁切，無法完成含門料單。");
       const missingDoorCabinets = missingDoorSourceCabinetIds(doorCrops, plan.cabinets.map((cabinet) => cabinet.cabinetId));

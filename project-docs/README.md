@@ -1,6 +1,6 @@
 # 自動拆料專案總索引
 
-整理日期：2026-09-14。這份建檔涵蓋目前工作區可取得的資料，不是全部歷史對話逐字稿。
+整理日期：2026-09-15。這份建檔涵蓋目前工作區可取得的資料，不是全部歷史對話逐字稿。
 
 ## 建議分類
 
@@ -11,7 +11,7 @@
 | [TOOLS.md](TOOLS.md) | 實際使用的程式工具、版本與用途 |
 | [STATUS.md](STATUS.md) | 未完成事項、規則衝突、驗收狀態 |
 | [VALIDATION.md](VALIDATION.md) | 離線測試與正式 AI 驗收分開管理 |
-| [../VERSION_HISTORY.md](../VERSION_HISTORY.md) | Sites v1～v82完整索引、最新修改註記與往後版本追加規範 |
+| [../VERSION_HISTORY.md](../VERSION_HISTORY.md) | Sites v1～v83紀錄、最新修改註記與往後版本追加規範 |
 | [AUDIT-2026-09-13.md](AUDIT-2026-09-13.md) | 本次完整檔案、程式、測試與附件盤點 |
 | [SOURCE-RULES.md](SOURCE-RULES.md) | 程式內 67 條 SOP、30 條數量規則、15 條基礎桶身規則的完整快照 |
 | [FILES.json](FILES.json) | 建檔時來源檔案的大小與 SHA-256 清冊 |
@@ -24,9 +24,9 @@
 
 ## 保存狀態
 
-- 現行 Sites 原始碼提交：`070be29e1dc2bc7564076a6727f212aa4dcbc133`，已部署為 v82；歷史移轉基準仍保留在 `SOURCE_VERSION.txt`。
+- 現行 Sites 原始碼提交：`a5139a99c577cbe0f68c365a775560dc58ff82c6`，已部署為 v83；歷史移轉基準仍保留在 `SOURCE_VERSION.txt`。
 - `app/face-machining.ts` 已接入 `/api/non-door` 與 `/api/doors`，並由現行測試覆蓋；未完成項目改以 [STATUS.md](STATUS.md) 為準。
-- GitHub 私人庫 `as46172886-ship-it/auto-cutlist` 保存程式、測試、規則文件與可取得附件；本次 v82 快照同步完成後以倉庫最新 HEAD 為準。
+- GitHub 私人庫 `as46172886-ship-it/auto-cutlist` 保存程式、測試、規則文件與可取得附件；本次 v83 快照同步完成後以倉庫最新 HEAD 為準。
 - GitHub 是移轉與稽核用封存；Sites 仍是網站原始碼與部署來源。同步 GitHub 不取代 Sites，也不變更 owner-only 存取權。
 - 本輪已完成離線測試與正式站部署，但未執行付費原圖正式掃描；正式 AI 90% 仍待依 [VALIDATION.md](VALIDATION.md) 驗收及複驗。
 

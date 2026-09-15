@@ -1,10 +1,10 @@
 # 自動拆料 → Codex 接手包
 
-原始移轉整理日期為2026-09-11；本工作副本於2026-09-14更新到正式站 v82。這是目前可取得資料的移轉副本，不是全部歷史對話逐字匯出；原專案與原始檔保留。
+原始移轉整理日期為2026-09-11；本工作副本於2026-09-15更新到正式站 v83。這是目前可取得資料的移轉副本，不是全部歷史對話逐字匯出；原專案與原始檔保留。
 
 ## 如何接手
 
-解壓縮後，讓 Codex 開啟整個 codex-migration 資料夾，讀本檔、AGENTS.md、HANDOFF.md、VERSION_HISTORY.md，再進入 cabinet-ai-demo 工作。目前 `cabinet-ai-demo` 的提交 `070be29e1dc2bc7564076a6727f212aa4dcbc133` 已部署為原網站 Sites v82；後續仍須以 `CURRENT_VERSION.txt`、`VERSION_HISTORY.md` 與 Sites 狀態核對，不可只信舊摘要。
+解壓縮後，讓 Codex 開啟整個 codex-migration 資料夾，讀本檔、AGENTS.md、HANDOFF.md、VERSION_HISTORY.md，再進入 cabinet-ai-demo 工作。目前 `cabinet-ai-demo` 的提交 `a5139a99c577cbe0f68c365a775560dc58ff82c6` 已部署為原網站 Sites v83；後續仍須以 `CURRENT_VERSION.txt`、`VERSION_HISTORY.md` 與 Sites 狀態核對，不可只信舊摘要。
 
 可交給 Codex 的第一句話：
 
@@ -18,7 +18,7 @@
 - references/：此次找回的歷版 SOP、衣櫃試拆表與研究藍圖，屬歷史材料，不自動視為最新規則。
 - offline-evidence/：先前離線圖像處理、原圖副本、診斷與Excel相容性材料。檔案存在不代表每個研究方案已採用或驗收。
 - SOURCE_VERSION.txt、CURRENT_VERSION.txt、CHANGELOG.txt：原始移轉基準、目前正式版本與提交摘要。
-- VERSION_HISTORY.md：實際 Sites v1～v82版本索引、v82詳細註記與往後每版必填範本；只追加，不覆寫舊紀錄。
+- VERSION_HISTORY.md：實際 Sites v1～v82歷史索引、v83最新修改與部署註記、往後每版必填範本；只追加，不覆寫舊紀錄。
 - MANIFEST.json：原始2026-09-11移轉包的大小與SHA-256歷史清冊；目前GitHub快照清冊見project-docs/FILES.json。
 
 本包不轉移瀏覽器登入狀態或雲端API秘密。已配置的雲端秘密仍留在原Sites專案；新Codex環境需有正常平台存取權，不能擷取明文金鑰當成移轉方式。

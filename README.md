@@ -18,7 +18,7 @@
 - [使用工具](project-docs/TOOLS.md)
 - [狀態、衝突與未完成事項](project-docs/STATUS.md)
 - [測試與正式驗收](project-docs/VALIDATION.md)
-- [Sites v1～v82完整版本紀錄與新版本追加規範](VERSION_HISTORY.md)
+- [Sites v1～v83版本紀錄與新版本追加規範](VERSION_HISTORY.md)
 - [2026-09-13完整盤點](project-docs/AUDIT-2026-09-13.md)
 - [程式規則完整快照](project-docs/SOURCE-RULES.md)
 - [來源檔案雜湊清冊](project-docs/FILES.json)
@@ -27,4 +27,4 @@
 
 正式網站仍沿用原Sites專案與owner-only權限；此GitHub保存庫只作版本歸檔，不取代網站或改變其權限。
 
-目前正式網站為 Sites v82，來源提交與部署識別記錄在 `CURRENT_VERSION.txt`；D1與R2均未啟用。2.4／24mm現在只作斜把肯定提示，不再作門高扣數或完整料單阻擋條件。
+目前正式網站為 Sites v83，來源提交與部署識別記錄在 `CURRENT_VERSION.txt`；D1與R2均未啟用。門片在最後一關完整確認寬高、開向與加工後凍結，不再被第一輪草稿覆蓋。固格、抽屜公式與2.4只提示斜把的規則未變。
